@@ -1,0 +1,8 @@
+#+TITLE: Learning Agda one Proof at a Time
+#+AUTHOR: Simon Beaumont
+#+EMAIL: datalligator@icloud.com
+#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
+#+STARTUP: inlineimages overview latexpreview
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{positioning}
+
