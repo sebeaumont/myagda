@@ -202,5 +202,4 @@ zero    * _  = zero
     suc n * (m * l)
   ∎
 
-  Are we done here? TODO shorthand versions of these using
--- rewrite?
+--  Are we done here? TODO shorthand versions of these using rewrite?
