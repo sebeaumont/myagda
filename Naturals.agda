@@ -26,10 +26,8 @@ data ℕ : Set where
 -- so we can use decimal notation in Agda
 {-# BUILTIN NATURAL ℕ #-}
 
--- TODO import these from diy Equality module and make sure it all still checks
-
 --import Relation.Binary.PropositionalEquality as Eq
-import Equality as Eq
+import Equality as Eq -- diy equality 
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 
@@ -196,17 +194,22 @@ zero    * _  = zero
     (suc m) * p + n * p         
   ∎
   
--- TODO
-{-
--- associativity of multiplication
+-- Theorem 3. Associativity of multiplication
 *-assoc : ∀ (n m l : ℕ) -> (n * m) * l ≡ n * (m * l)
 *-assoc zero _ _ = refl
 *-assoc (suc n) m l =
   begin
-    (suc n * m) * l
-  ≡⟨⟩
-    ((m + (n * m)) * l)
-  ≡⟨ {!!} ⟩
+    ((suc n) * m) * l                  
+  ≡⟨⟩                                  -- inductive defintion of *
+    (m + n * m) * l                    
+  ≡⟨ *-distrib-+ m (n * m) l ⟩         -- * distributes over +
+    (m * l) + (n * m) * l
+  ≡⟨ cong ((m * l) +_) (*-assoc n m l) ⟩ -- inductive case of *-assoc
+    (m * l) + n * (m * l)
+  ≡⟨⟩                                 -- ^ inductive defintion of *
     suc n * (m * l)
   ∎
--}
+
+-- So we needed *-distrib-+ to prove *-assoc for the multiplicative
+-- monoid.  Are we done here? TODO shorthand versions of these using
+-- rewrite?
