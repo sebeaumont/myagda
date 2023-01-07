@@ -1,4 +1,4 @@
-#+TITLE: Learning Agda one Proof at a Time
+#+TITLE: Learning Agda one Proof at a time
 #+AUTHOR: Simon Beaumont
 #+EMAIL: datalligator@icloud.com
 #+BIBLIOGRAPHY: ~/Notes/bibliography.bib
@@ -6,3 +6,29 @@
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
+
+Following these inspiring courses:
+________________________________________________________________________________
+
+Wadler, Philip, Wen Kokke, and Jeremy G. Siek.
+/Programming Language Foundations in Agda./
+Available at https://plfa.inf.ed.ac.uk/22.08/. 2022.
+
+Jesper Cockx - /Programming and Proving in Agda./
+[[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf]]
+
+Conor McBride - /CS410 Advanced Functional Programming/
+University of Strathclyde lecture series 2017
+[[https://github.com/pigworker/CS410-17.git][https://github.com/pigworker/CS410-17.git]]
+Video set compiled by Philip Zucker:
+[[https://www.youtube.com/playlist?list=PLqggUNm8QSqmeTg5n37oxBif-PInUfTJ2][https://www.youtube.com/playlist?list=PLqggUNm8QSqmeTg5n37oxBif-PInUfTJ2]]
+
+________________________________________________________________________________
+
+With thanks to the instructors and their students for the Agda foo and
+sharing the joy of machine checked proof. -- Simon Beaumont 2022
+
+And of course massive Kudos and gratitude to the creators and
+maintainers of Agda itself:
+
+[[https://agda.readthedocs.io/en/v2.6.2.2.20230105/team.html][https://agda.readthedocs.io/en/v2.6.2.2.20230105/team.html]]

@@ -1,33 +1,25 @@
 module Naturals where
 
--- Arithmetic using God's own numbers (well Peano's as everything here are
--- artefacts of human minds as far as I know).
+-- Arithmetic using Peano's numbers.
 
--- Pedagigy thanks to the following acdemicians, all errors my own.
--- Simon Beaumont 2022
+-- Upto proof of additive (ℕ,+,1) and multiplicative (ℕ,*,0) monoids
+-- which (AFAICT) needs distributivity of * over + to prove
+-- associativity for the multiplicative monoid.
 
--- Wadler, Philip, Wen Kokke, and Jeremy G. Siek. Programming Language
--- Foundations in Agda. Available at
--- https://plfa.inf.ed.ac.uk/22.08/. 2022.
-
--- Jesper Cockx. Programming and Proving in Agda.
--- https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf
-
--- Conor McBride - CS410 Advanced Functional Programming
--- University of Strathclyde lecture series 2017
--- https://github.com/pigworker/CS410-17.git
--- Video set compiled by Philip Zucker:
--- https://www.youtube.com/playlist?list=PLqggUNm8QSqmeTg5n37oxBif-PInUfTJ2 
+-- See: README.org for sources and citations.
 
 data ℕ : Set where
   zero : ℕ
   suc  : ℕ → ℕ
 
--- so we can use decimal notation in Agda
+-- So we can use decimal notation in Agda (used for shorthand in identities)
 {-# BUILTIN NATURAL ℕ #-}
 
---import Relation.Binary.PropositionalEquality as Eq
-import Equality as Eq -- diy equality 
+-- We use a DIY Equality module for now to show how the tools for step
+-- by step equational reasoning work.
+-- otherwise: import Relation.Binary.PropositionalEquality as Eq
+
+import Equality as Eq 
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 
@@ -41,7 +33,7 @@ zero    + y = y
 
 infixl 6 _+_
 
--- Theorem 1. associativity of addition
+-- Theorem 1. Associativity of addition
 +-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k) -- the induction hypothesis
 +-assoc zero m k =
   begin
@@ -58,7 +50,7 @@ infixl 6 _+_
     suc (n + m) + k
   ≡⟨⟩
     suc ((n + m) + k)           -- work down simplifying
-  ≡⟨ cong suc (+-assoc n m k) ⟩ -- this step is less than obvious: [1]
+  ≡⟨ cong suc (+-assoc n m k) ⟩ -- this step needs some explanation: [1]
     suc (n + (m + k))           -- work up from goal simplifying
   ≡⟨⟩
     suc n + (m + k)             -- goal
@@ -69,7 +61,7 @@ infixl 6 _+_
 -- recursive application of the function (+-assoc n m k) has the type
 -- of the induction hypotheis and `cong suc` prefaces `suc` to each
 -- side of the equation; establishing evidence for the hypotheis.
--- See also: plfa Ch 2. Induction.lagda.md
+-- See: plfa Ch 2. Induction.lagda.md
 
 -- Lemma 1.1 additive identity of 0
 +-identity⃗ : ∀ (n : ℕ) → (n + zero) ≡ n
@@ -210,6 +202,5 @@ zero    * _  = zero
     suc n * (m * l)
   ∎
 
--- So we needed *-distrib-+ to prove *-assoc for the multiplicative
--- monoid.  Are we done here? TODO shorthand versions of these using
+  Are we done here? TODO shorthand versions of these using
 -- rewrite?
