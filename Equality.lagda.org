@@ -6,34 +6,40 @@
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
+* The Equality Type
 #+begin_src agda2
-
 module Equality where
 
--- The identity type
 data _≡_ {A : Set} : A → A → Set where 
   refl : {x : A} → x ≡ x
-  
+
 infix 4 _≡_
 
 {-# BUILTIN EQUALITY _≡_ #-}
+#+end_src
 
--- symmetry of equality
+** Symmetry of Equality
+#+begin_src agda2
 sym : {A : Set} {x y : A} → x ≡ y → y ≡ x
 sym refl = refl
+#+end_src
 
--- transitivity of equality
+** Transitivity of equality
+#+begin_src agda2
 trans : {A : Set} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
 trans refl refl = refl
+#+end_src
 
--- congruence of equality
+** Congruence of equality
+#+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B) → x ≡ y → f x ≡ f y
 cong f refl = refl
+#+end_src
 
---------------------------------------------------------------------------------
--- equational reasoning utilities - stolen from Core.agda to show how simple
--- this magic is ;-)
+** Equational reasoning
 
+Some utilities - stolen from Core.agda to show how simple this magic is ;-)
+#+begin_src agda2
 module ≡-Reasoning {A : Set} where
   
   infix  3 _∎
@@ -57,6 +63,5 @@ module ≡-Reasoning {A : Set} where
 
   syntax step-≡  x y≡z x≡y = x ≡⟨  x≡y ⟩ y≡z
   syntax step-≡˘ x y≡z y≡x = x ≡˘⟨ y≡x ⟩ y≡z
-
 #+end_src
 

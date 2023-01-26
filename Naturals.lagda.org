@@ -1,4 +1,4 @@
-#+TITLE: Propositional Equality in Agda
+#+TITLE: Natural numbers in Agda
 #+AUTHOR: Simon Beaumont
 #+EMAIL: datalligator@icloud.com
 
@@ -7,21 +7,10 @@
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
-** TODO poset via ≤
-** TODO monus
-** TODO difference
-
+* Natural Numbers
+** Define Peano's numbers
 #+begin_src agda2
-
 module Naturals where
-
--- Arithmetic using Peano's numbers.
-
--- Upto proof of additive (ℕ,+,1) and multiplicative (ℕ,*,0) monoids
--- which (AFAICT) needs distributivity of * over + to prove
--- associativity for the multiplicative monoid.
-
--- See: README.org for sources and citations.
 
 data ℕ : Set where
   zero : ℕ
@@ -33,13 +22,13 @@ data ℕ : Set where
 -- We use a DIY Equality module for now to show how the tools for step
 -- by step equational reasoning work.
 -- otherwise: import Relation.Binary.PropositionalEquality as Eq
-
 import Equality as Eq 
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
+#+end_src
 
---------------------------------------------------------------------------------
--- The additive monoid (ℕ,+,0)
+** The additive monoid (ℕ,+,0)
+#+begin_src agda2
 
 -- Definition 1. Inductive definition of addition 
 _+_ : ℕ → ℕ → ℕ
@@ -216,7 +205,6 @@ zero    * _  = zero
   ≡⟨⟩                                 -- ^ inductive defintion of *
     suc n * (m * l)
   ∎
-
 #+end_src
 
 ** Using ~rewrite~ for shorthand equational reasoning
@@ -227,6 +215,94 @@ zero    * _  = zero
 *-assoc' : ∀ (n m l : ℕ) -> (n * m) * l ≡ n * (m * l)
 *-assoc' zero _ _ = refl
 *-assoc' (suc n) m l rewrite *-distrib-+ m (n * m) l | *-assoc n m l = refl
+
++-assoc' : ∀ (n m l : ℕ) -> (n + m) + l ≡ n + (m + l)
++-assoc' zero _ _ = refl
++-assoc' (suc n) m l rewrite +-assoc n m l = refl
 #+end_src
 
+** A Finitist proof of associativty of addition
+Is this is cheating using refl?
 
+#+begin_src agda2
+finite-+-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k)
+-- on day 1 we know 0 and (0 + 0) + 0 ≡ 0 + (0 + 0)
+finite-+-assoc 0 0 0 = refl
+-- on day 2 we know 1 and ...
+finite-+-assoc 0 0 1 = refl
+finite-+-assoc 0 1 0 = refl
+finite-+-assoc 0 1 1 = refl
+finite-+-assoc 1 0 0 = refl
+finite-+-assoc 1 0 1 = refl
+finite-+-assoc 1 1 0 = refl
+finite-+-assoc 1 1 1 = refl
+-- and then I gave up... but Agda gave me a clue...
+finite-+-assoc zero zero (suc k) = refl
+finite-+-assoc zero (suc m) k = refl
+finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl
+#+end_src
+
+** Even and Odd Naturals
+*** Definitions
+
+Nota: forward declaration of mutually recursive types.
+#+begin_src agda2
+data even : ℕ → Set
+data odd : ℕ → Set
+
+data even where
+
+  zero :
+    ---------
+    even zero
+    
+  suc : ∀ {n : ℕ}
+    → odd n
+      ------
+    → even (suc n)
+    
+data odd where
+
+  suc : ∀ {n : ℕ}
+    → even n
+      -----------
+    → odd (suc n)
+#+end_src
+
+*** Prop 1: The sum of two even numbers is even
+#+begin_src agda2
+e+e≡e : ∀ {m n : ℕ}
+  → even m
+  → even n
+    ------------
+  → even (m + n)
+#+end_src
+
+*** Prop 2: The sum of an even and odd number is odd
+#+begin_src agda2
+o+e≡o : ∀ {m n : ℕ}
+  → odd m
+  → even n
+    -----------
+  → odd (m + n)
+#+end_src
+
+*** Proofs of Prop 1 and 2 (mutually recursive)
+#+begin_src agda2
+e+e≡e zero     en = en
+e+e≡e (suc om) en = suc (o+e≡o om en)
+
+o+e≡o (suc em) en = suc (e+e≡e em en)
+#+end_src
+
+*** Prop 3: The sum of two odd numbers is even
+#+begin_src agda2
+o+o≡e : ∀ {m n : ℕ}
+  → odd m
+  → odd n
+  --------------
+  → even (m + n)
+
+o+o≡e (suc zero) on = suc on
+o+o≡e (suc (suc om)) on = suc (suc (o+o≡e om on))
+#+end_src
