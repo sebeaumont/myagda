@@ -20,19 +20,31 @@ infix 4 _≡_
 
 ** Symmetry of Equality
 #+begin_src agda2
-sym : {A : Set} {x y : A} → x ≡ y → y ≡ x
+sym : {A : Set} {x y : A}
+  → x ≡ y
+    -----
+  → y ≡ x
 sym refl = refl
 #+end_src
 
 ** Transitivity of equality
 #+begin_src agda2
-trans : {A : Set} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
+trans : {A : Set} {x y z : A}
+  → x ≡ y
+  → y ≡ z
+    -----
+  → x ≡ z
 trans refl refl = refl
 #+end_src
 
 ** Congruence of equality
+
+This reminds me of functionality or functoriality of equality...
 #+begin_src agda2
-cong : {A B : Set} {x y : A} → (f : A → B) → x ≡ y → f x ≡ f y
+cong : {A B : Set} {x y : A} → (f : A → B)
+  → x ≡ y
+    ---------
+  → f x ≡ f y
 cong f refl = refl
 #+end_src
 
