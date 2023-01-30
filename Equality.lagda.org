@@ -6,7 +6,8 @@
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
-* The Equality Type
+* Propositional Equality 
+** The Equality Type
 #+begin_src agda2
 module Equality where
 
@@ -39,13 +40,33 @@ trans refl refl = refl
 
 ** Congruence of equality
 
-This reminds me of functionality or functoriality of equality...
+This reminds me of functionality/functoriality of equality...
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
   → x ≡ y
     ---------
   → f x ≡ f y
 cong f refl = refl
+#+end_src
+
+** Congruence of equal function application
+#+begin_src agda2
+cong-app : ∀ {A B : Set} {f g : A → B}
+  → f ≡ g
+    ---------------------
+  → ∀ (x : A) → f x ≡ g x
+cong-app refl x = refl
+#+end_src
+
+** Substitution of equality
+If two values are equal and a predicate holds for one then it holds
+for the other.
+#+begin_src agda2
+subst : ∀ {A : Set} {x y : A} (P : A → Set)
+  → x ≡ y
+    ---------
+  → P x → P y
+subst P refl x′ = x′
 #+end_src
 
 ** Equational reasoning
@@ -58,22 +79,40 @@ module ≡-Reasoning {A : Set} where
   infixr 2 _≡⟨⟩_ step-≡ step-≡˘
   infix  1 begin_
 
-  begin_ : ∀ {x y : A} → x ≡ y → x ≡ y
+  begin_ : ∀ {x y : A}
+    → x ≡ y
+      -----
+    → x ≡ y
   begin_ x≡y = x≡y
 
-  _≡⟨⟩_ : ∀ (x {y} : A) → x ≡ y → x ≡ y
+  _≡⟨⟩_ : ∀ (x {y} : A)
+    → x ≡ y
+      -----
+    → x ≡ y
   _ ≡⟨⟩ x≡y = x≡y
 
-  step-≡ : ∀ (x {y z} : A) → y ≡ z → x ≡ y → x ≡ z
+  step-≡ : ∀ (x {y z} : A)
+    → y ≡ z
+    → x ≡ y
+      -----
+    → x ≡ z
   step-≡ _ y≡z x≡y = trans x≡y y≡z
 
-  step-≡˘ : ∀ (x {y z} : A) → y ≡ z → y ≡ x → x ≡ z
+  step-≡˘ : ∀ (x {y z} : A)
+    → y ≡ z
+    → y ≡ x
+      -----
+    → x ≡ z
   step-≡˘ _ y≡z y≡x = trans (sym y≡x) y≡z
 
-  _∎ : ∀ (x : A) → x ≡ x
+  _∎ : ∀ (x : A)
+      -----
+    → x ≡ x
   _∎ _ = refl
 
-  syntax step-≡  x y≡z x≡y = x ≡⟨  x≡y ⟩ y≡z
+  -- syntactic candy for step-≡
+  syntax step-≡  x y≡z x≡y = x ≡⟨ x≡y ⟩ y≡z
   syntax step-≡˘ x y≡z y≡x = x ≡˘⟨ y≡x ⟩ y≡z
 #+end_src
+
 

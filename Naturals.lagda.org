@@ -8,6 +8,7 @@
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
 * Natural Numbers
+
 ** Define Peano's numbers
 #+begin_src agda2
 module Naturals where
@@ -26,6 +27,7 @@ import Equality as Eq
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 #+end_src
+
 
 ** The additive monoid (ℕ,+,0)
 #+begin_src agda2
@@ -127,17 +129,19 @@ infixl 6 _+_
   ≡⟨ cong (_+ q) (+-assoc m n p) ⟩     -- shift parens from L to R
     (m + (n + p)) + q
   ∎
+#+end_src
 
 
-----------------------------------------------------------------------------------
--- monoid (ℕ,*,1)
-
--- Defintion 2. inductive definition of multiplication
+** The mutiplicative monoid (ℕ,*,1)
+*** Defintion 2. inductive definition of multiplication
+#+begin_src agda2
 _*_ : ℕ → ℕ → ℕ
 zero    * _  = zero
 (suc n) * m  = m + (n * m) 
+#+end_src
 
--- Lemma 2.1 right multiplicative identity
+*** Lemma 2.1 right multiplicative identity
+#+begin_src agda2
 *-identity⃗ : ∀ (n : ℕ) → n * 1 ≡ n
 *-identity⃗ zero = refl
 *-identity⃗ (suc n) =
@@ -148,8 +152,10 @@ zero    * _  = zero
   ≡⟨ cong suc (*-identity⃗ n) ⟩
     suc n
   ∎
+#+end_src
 
--- Lemma 2.2 left multiplicative identity
+*** Lemma 2.2 left multiplicative identity
+#+begin_src agda2
 *-identity⃐ : ∀ (n : ℕ) → 1 * n ≡ n
 *-identity⃐ zero = refl
 *-identity⃐ (suc n) =
@@ -160,16 +166,18 @@ zero    * _  = zero
   ≡⟨ cong suc (*-identity⃐ n) ⟩
     suc n
   ∎
+#+end_src
 
---  Theorem 2. multiplication distributes over addition
+*** Theorem 2. multiplication distributes over addition
+#+begin_src agda2
 *-distrib-+ : ∀ (m n p : ℕ) -> (m + n) * p ≡ m * p + n * p
 *-distrib-+ zero n p =
   begin
     (zero + n) * p
   ≡⟨⟩
-    n * p
+     n * p
   ≡⟨⟩
-    zero * p + n * p
+  zero * p + n * p
   ∎
 *-distrib-+ (suc m) n p =
   begin
@@ -189,8 +197,10 @@ zero    * _  = zero
   ≡⟨⟩                                  -- ^ inductive defintion of *
     (suc m) * p + n * p         
   ∎
-  
--- Theorem 3. Associativity of multiplication
+#+end_src
+
+*** Theorem 3. Associativity of multiplication
+#+begin_src agda2
 *-assoc : ∀ (n m l : ℕ) -> (n * m) * l ≡ n * (m * l)
 *-assoc zero _ _ = refl
 *-assoc (suc n) m l =
@@ -206,6 +216,7 @@ zero    * _  = zero
     suc n * (m * l)
   ∎
 #+end_src
+
 
 ** Using ~rewrite~ for shorthand equational reasoning
 
@@ -241,6 +252,7 @@ finite-+-assoc zero zero (suc k) = refl
 finite-+-assoc zero (suc m) k = refl
 finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl
 #+end_src
+
 
 ** Even and Odd Naturals
 *** Definitions
