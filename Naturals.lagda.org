@@ -133,6 +133,7 @@ infixl 6 _+_
 
 
 ** The mutiplicative monoid (ℕ,*,1)
+
 *** Defintion 2. inductive definition of multiplication
 #+begin_src agda2
 _*_ : ℕ → ℕ → ℕ
