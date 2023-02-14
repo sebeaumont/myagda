@@ -12,7 +12,9 @@
 module Equality where
 
 data _≡_ {A : Set} : A → A → Set where 
-  refl : {x : A} → x ≡ x
+  refl : {x : A}
+      -----
+    → x ≡ x
 
 infix 4 _≡_
 

@@ -56,7 +56,7 @@ infix 4 _≤_
 
 ** Inequality reasoning
 
-My anaology with ≡ an attempt to do the same tricks and prove things
+By anaology with ≡ an attempt to do the same tricks and prove things
 in Relations a more clear way.
 
 #+begin_src agda2
@@ -111,7 +111,7 @@ open ≤-Reasoning
 +-mono⃗-≤ : ∀ (l m n : ℕ)
   → m ≤ n
     -------------
-  → (l + m) ≤ (l + n)
+  → l + m ≤ l + n
 +-mono⃗-≤ zero m n m≤n =
   begin
     zero + m
@@ -158,6 +158,4 @@ open ≤-Reasoning
   ≤⟨ +-mono⃗-≤ l m n m≤n ⟩
     l + n 
   ∎
-
--- ≤-trans (+-mono⃖-≤ k l m k≤l) (+-mono⃗-≤ l m n m≤n)  
 #+end_src
