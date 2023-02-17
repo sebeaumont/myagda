@@ -70,13 +70,13 @@ infixl 6 _+_
 -- See: plfa Ch 2. Induction.lagda.md
 
 -- Lemma 1.1 additive identity of 0
-+-identity⃗ : ∀ (n : ℕ) → (n + zero) ≡ n
-+-identity⃗ zero = refl
-+-identity⃗ (suc n) = cong suc (+-identity⃗ n)
++-identityʳ : ∀ (n : ℕ) → (n + zero) ≡ n
++-identityʳ zero = refl
++-identityʳ (suc n) = cong suc (+-identityʳ n)
 
-+-identity⃐ : ∀ (n : ℕ) → zero + n ≡ n
-+-identity⃐ zero = refl
-+-identity⃐ (suc n) = cong suc (+-identity⃐ n)
++-identityˡ : ∀ (n : ℕ) → zero + n ≡ n
++-identityˡ zero = refl
++-identityˡ (suc n) = cong suc (+-identityˡ n)
 
 -- Lemma 1.2 define suc on second argument of addition
 +-suc : ∀ (m n : ℕ) → m + suc n ≡ suc (m + n)
@@ -104,7 +104,7 @@ infixl 6 _+_
 +-comm m zero =
   begin
     m + zero
-  ≡⟨ +-identity⃗ m ⟩
+  ≡⟨ +-identityʳ m ⟩
     m
   ≡⟨⟩
     (zero + m)
@@ -143,28 +143,28 @@ zero    * _  = zero
 
 *** Lemma 2.1 right multiplicative identity
 #+begin_src agda2
-*-identity⃗ : ∀ (n : ℕ) → n * 1 ≡ n
-*-identity⃗ zero = refl
-*-identity⃗ (suc n) =
+*-identityʳ : ∀ (n : ℕ) → n * 1 ≡ n
+*-identityʳ zero = refl
+*-identityʳ (suc n) =
   begin
     (suc n) * 1
   ≡⟨⟩
     suc (n * 1)
-  ≡⟨ cong suc (*-identity⃗ n) ⟩
+  ≡⟨ cong suc (*-identityʳ n) ⟩
     suc n
   ∎
 #+end_src
 
 *** Lemma 2.2 left multiplicative identity
 #+begin_src agda2
-*-identity⃐ : ∀ (n : ℕ) → 1 * n ≡ n
-*-identity⃐ zero = refl
-*-identity⃐ (suc n) =
+*-identityˡ : ∀ (n : ℕ) → 1 * n ≡ n
+*-identityˡ zero = refl
+*-identityˡ (suc n) =
   begin
    1 * (suc n) 
   ≡⟨⟩
     suc (n + zero)              -- computer found this for me!
-  ≡⟨ cong suc (*-identity⃐ n) ⟩
+  ≡⟨ cong suc (*-identityˡ n) ⟩
     suc n
   ∎
 #+end_src

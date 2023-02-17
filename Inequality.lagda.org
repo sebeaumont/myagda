@@ -108,36 +108,36 @@ open ≤-Reasoning
 #+end_src
 
 #+begin_src agda2
-+-mono⃗-≤ : ∀ (l m n : ℕ)
++-monoʳ-≤ : ∀ (l m n : ℕ)
   → m ≤ n
     -------------
   → l + m ≤ l + n
-+-mono⃗-≤ zero m n m≤n =
++-monoʳ-≤ zero m n m≤n =
   begin
     zero + m
   ≤⟨ m≤n ⟩
     zero + n
   ∎
-+-mono⃗-≤ (suc l) m n m≤n =
++-monoʳ-≤ (suc l) m n m≤n =
   begin
     (suc l) + m
-  ≤⟨ s≤s (+-mono⃗-≤ l m n m≤n) ⟩  
+  ≤⟨ s≤s (+-monoʳ-≤ l m n m≤n) ⟩  
     suc (l + n)
   ∎
 #+end_src
 
 *** If this is more illustrative then good.
 #+begin_src agda2
-+-mono⃖-≤ : ∀ (l m n : ℕ)
++-monoˡ-≤ : ∀ (l m n : ℕ)
   → l ≤ m
     -------------
   → l + n ≤ m + n
-+-mono⃖-≤ l m n l≤m =
++-monoˡ-≤ l m n l≤m =
   begin
     l + n
   ≡⟨ +-comm l n ⟩
     n + l
-  ≤⟨ {!+-mono⃗-≤ l n m l≤m!} ⟩
+  ≤⟨ {!+-monoʳ-≤ l n m l≤m!} ⟩
     n + m
   ≡⟨ +-comm n m ⟩  
     m + n
@@ -153,9 +153,9 @@ open ≤-Reasoning
 +-mono-≤ k l m n k≤l m≤n =
   begin
     k + m
-  ≤⟨ +-mono⃖-≤ k l m k≤l ⟩
+  ≤⟨ +-monoˡ-≤ k l m k≤l ⟩
     l + m
-  ≤⟨ +-mono⃗-≤ l m n m≤n ⟩
+  ≤⟨ +-monoʳ-≤ l m n m≤n ⟩
     l + n 
   ∎
 #+end_src

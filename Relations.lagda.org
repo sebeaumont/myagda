@@ -189,25 +189,25 @@ forward clause matches first).
 An operator with respect to an ordering may exhibit monotonicty.  In
 this case addition is monotone with regard to inequality.  Let's state
 the theorem and then show that addition is monotonic on the right.
-
+ˡ
 #+begin_src agda2
-+-mono⃑-≤ : ∀ (l m n : ℕ)
++-monoʳ-≤ : ∀ (l m n : ℕ)
   → m ≤ n
     -------------
   → l + m ≤ l + n
-+-mono⃑-≤ zero m n m≤n = m≤n
-+-mono⃑-≤ (suc l) m n m≤n = s≤s (+-mono⃑-≤ l m n m≤n)  
++-monoʳ-≤ zero m n m≤n = m≤n
++-monoʳ-≤ (suc l) m n m≤n = s≤s (+-monoʳ-≤ l m n m≤n)  
 #+end_src
 
 Now we can state that addition is monotonic on the left as this
 follows from the commutativity of addition and the previous case.
 
 #+begin_src agda2
-+-mono⃐-≤ : ∀ (l m n : ℕ)
++-monoˡ-≤ : ∀ (l m n : ℕ)
   → l ≤ m
     -------------
   → l + n ≤ m + n
-+-mono⃐-≤ l m n l≤m rewrite +-comm l n | +-comm m n = +-mono⃑-≤ n l m l≤m
++-monoˡ-≤ l m n l≤m rewrite +-comm l n | +-comm m n = +-monoʳ-≤ n l m l≤m
 #+end_src
 
 Now to combine the two previous results with transitivity.
@@ -218,18 +218,18 @@ Now to combine the two previous results with transitivity.
   → m ≤ n
     -------------
   → k + m ≤ l + n
-+-mono-≤ k l m n k≤l m≤n = ≤-trans (+-mono⃐-≤ k l m k≤l) (+-mono⃑-≤ l m n m≤n)  
++-mono-≤ k l m n k≤l m≤n = ≤-trans (+-monoˡ-≤ k l m k≤l) (+-monoʳ-≤ l m n m≤n)  
 #+end_src
 
 Show that multiplication is monotonic w.r.t inequality.
 
 #+begin_src agda2
-*-mono⃑-≤ : ∀ (l m n : ℕ)
+*-monoʳ-≤ : ∀ (l m n : ℕ)
   → m ≤ n
     -------------
   → l * m ≤ l * n
-*-mono⃑-≤ zero _ _ _ = z≤n
-*-mono⃑-≤ (suc l) m n m≤n = +-mono-≤ m n (l * m) (l * n) m≤n (*-mono⃑-≤ l m n m≤n)
+*-monoʳ-≤ zero _ _ _ = z≤n
+*-monoʳ-≤ (suc l) m n m≤n = +-mono-≤ m n (l * m) (l * n) m≤n (*-monoʳ-≤ l m n m≤n)
 #+end_src
 
 That was more tricky, we need to have seen (from the goal) that the
@@ -238,11 +238,11 @@ case to provide the final piece of evidence.
 
 Now for the left identity...
 #+begin_src agda2
-*-mono⃐-≤ : ∀ (l m n : ℕ)
+*-monoˡ-≤ : ∀ (l m n : ℕ)
   → l ≤ m
     -------------
   → l * n ≤ m * n
-*-mono⃐-≤ l m n l≤m rewrite *-comm l n | *-comm m n = *-mono⃑-≤ n l m l≤m
+*-monoˡ-≤ l m n l≤m rewrite *-comm l n | *-comm m n = *-monoʳ-≤ n l m l≤m
 #+end_src
 
 #+begin_src agda2
@@ -251,6 +251,6 @@ Now for the left identity...
   → m ≤ n
     -------------
   → k * m ≤ l * n 
-*-mono-≤ k l m n k≤l m≤n = ≤-trans (*-mono⃐-≤ k l m k≤l) (*-mono⃑-≤ l m n m≤n)          
+*-mono-≤ k l m n k≤l m≤n = ≤-trans (*-monoˡ-≤ k l m k≤l) (*-monoʳ-≤ l m n m≤n)          
 #+end_src
 
