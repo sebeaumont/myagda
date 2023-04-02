@@ -7,6 +7,7 @@
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 
 * Propositional Equality 
+
 ** The Equality Type
 #+begin_src agda2
 module Equality where
@@ -41,8 +42,7 @@ trans refl refl = refl
 #+end_src
 
 ** Congruence of equality
-
-This reminds me of functionality/functoriality of equality...
+This reminds me of functionality/functoriality/homomorphism
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
   → x ≡ y
