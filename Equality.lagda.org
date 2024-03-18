@@ -1,10 +1,5 @@
-#+TITLE: Propositional Equality in Agda
-#+AUTHOR: Simon Beaumont
-#+EMAIL: datalligator@icloud.com
-#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
-#+STARTUP: inlineimages overview latexpreview
-#+LATEX_HEADER: \usepackage{tikz}
-#+LATEX_HEADER: \usetikzlibrary{positioning}
+#+TITLE:     Propositional Equality in Agda
+#+SETUPFILE: org-source-setup.org
 
 * Propositional Equality 
 
@@ -42,7 +37,10 @@ trans refl refl = refl
 #+end_src
 
 ** Congruence of equality
-This reminds me of functionality/functoriality/homomorphism
+Simply stated if x = y then f x = f y, to me this says as much about
+what a function is as it does about the fact that functoriality
+respects equality, depends on your viewpoint; but it's a fundemental
+observation.
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
   → x ≡ y
@@ -73,7 +71,10 @@ subst P refl x′ = x′
 
 ** Equational reasoning
 
-Some utilities - stolen from Core.agda to show how simple this magic is ;-)
+Some utilities - stolen from Core.agda to show how simple the magic
+is.  I'm always genuinely amazed by the power of the dependant type
+theory and the beauty of Agda as a language.
+
 #+begin_src agda2
 module ≡-Reasoning {A : Set} where
   

@@ -1,0 +1,6 @@
+#+AUTHOR: Simon Beaumont
+#+EMAIL: datalligator@icloud.com
+#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
+#+STARTUP: inlineimages overview latexpreview entitiespretty indent
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{positioning}

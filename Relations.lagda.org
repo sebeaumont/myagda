@@ -1,25 +1,15 @@
 #+TITLE: Relations in Agda
-#+AUTHOR: Simon Beaumont
-#+EMAIL: datalligator@icloud.com
-
-#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
-#+STARTUP: inlineimages overview latexpreview
-#+LATEX_HEADER: \usepackage{tikz}
-#+LATEX_HEADER: \usetikzlibrary{positioning}
+#+SETUPFILE: org-source-setup.org
 
 * Preamble
 
 #+begin_src agda2
 module Relations where
 
--- maybe we should eat our own dogfood here but use the standard
--- library stuff in case we made mistokes previously.
 import Relation.Binary.PropositionalEquality as Eq
---import Equality as Eq
 open Eq using (_≡_; refl; cong)
 
 import Data.Nat as Nats
---import Naturals as Nats
 open Nats using (ℕ; zero; suc; _+_; _*_)
 
 import Data.Nat.Properties as NatProps
@@ -27,6 +17,7 @@ open NatProps using (+-comm; *-distrib-+; *-comm)
 #+end_src
 
 * Ordering Relations
+
 ** Properties of ordering relations
 
 - /Reflexive/ For all n, the relation n ≤ n holds.
@@ -72,7 +63,7 @@ inv-s≤s : ∀ {m n : ℕ}
 inv-s≤s (s≤s m≤n) = m≤n
 #+end_src
 
-A proof that the only way a number can be less than or equal to ~zero~
+A proof that the only way a Nat can be less than or equal to ~zero~
 is if it is exactly ~zero~. This is a result of /antisymmetry/ of the order
 relation and the base case.
 
@@ -126,12 +117,10 @@ With explicit parameters:
 ≤-trans' (suc m) (suc n) (suc p) (s≤s m≤n) (s≤s n≤p) = s≤s (≤-trans m≤n n≤p)
 #+end_src
 
-#+begin_quote
 The technique of induction on evidence that a property holds (e.g.,
-inducting on evidence that m ≤ n), rather than induction on values of (for)
+inducting on evidence that m ≤ n), rather than induction on values (for)
 which the property holds (e.g., inducting on m), will turn out to be
-immensely valuable, and one that we use often. 
-#+end_quote
+immensely valuable, and one that we use often.[cite:@plfa22.08]
 
 ** Anti-symmetry
 
@@ -189,7 +178,7 @@ forward clause matches first).
 An operator with respect to an ordering may exhibit monotonicty.  In
 this case addition is monotone with regard to inequality.  Let's state
 the theorem and then show that addition is monotonic on the right.
-ˡ
+
 #+begin_src agda2
 +-monoʳ-≤ : ∀ (l m n : ℕ)
   → m ≤ n
@@ -232,9 +221,9 @@ Show that multiplication is monotonic w.r.t inequality.
 *-monoʳ-≤ (suc l) m n m≤n = +-mono-≤ m n (l * m) (l * n) m≤n (*-monoʳ-≤ l m n m≤n)
 #+end_src
 
-That was more tricky, we need to have seen (from the goal) that the
-monotonicty of addition proof was required and applying the inductive
-case to provide the final piece of evidence.
+That was more tricky; we need to have seen (from the goal) that the
+monotonicty of addition proof was required and then applying the
+inductive case to provide the final piece of evidence.
 
 Now for the left identity...
 #+begin_src agda2

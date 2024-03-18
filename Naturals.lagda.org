@@ -1,11 +1,5 @@
 #+TITLE: Natural numbers in Agda
-#+AUTHOR: Simon Beaumont
-#+EMAIL: datalligator@icloud.com
-
-#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
-#+STARTUP: inlineimages overview latexpreview
-#+LATEX_HEADER: \usepackage{tikz}
-#+LATEX_HEADER: \usetikzlibrary{positioning}
+#+SETUPFILE: org-source-setup.org
 
 * Natural Numbers
 
@@ -20,26 +14,29 @@ data ℕ : Set where
 -- So we can use decimal notation in Agda (used for shorthand in identities)
 {-# BUILTIN NATURAL ℕ #-}
 
--- We use a DIY Equality module for now to show how the tools for step
--- by step equational reasoning work.
--- otherwise: import Relation.Binary.PropositionalEquality as Eq
+{- We use a DIY Equality module for now to show how the tools for step
+   by step equational reasoning work. In case of unexpected behaviour:
+   import Relation.Binary.PropositionalEquality as Eq instead. -}
+ 
 import Equality as Eq 
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 #+end_src
 
-
 ** The additive monoid (ℕ,+,0)
-#+begin_src agda2
 
--- Definition 1. Inductive definition of addition 
+Definition 1. Inductive definition of addition 
+
+#+begin_src agda2
 _+_ : ℕ → ℕ → ℕ
 zero    + y = y
 (suc x) + y = suc (x + y)
 
 infixl 6 _+_
+#+end_src
 
--- Theorem 1. Associativity of addition
+** Theorem 1. Associativity of addition
+#+begin_src agda2
 +-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k) -- the induction hypothesis
 +-assoc zero m k =
   begin
@@ -56,20 +53,23 @@ infixl 6 _+_
     suc (n + m) + k
   ≡⟨⟩
     suc ((n + m) + k)           -- work down simplifying
-  ≡⟨ cong suc (+-assoc n m k) ⟩ -- this step needs some explanation: [1]
+  ≡⟨ cong suc (+-assoc n m k) ⟩  -- this step needs some explanation: 1.
     suc (n + (m + k))           -- work up from goal simplifying
   ≡⟨⟩
     suc n + (m + k)             -- goal
   ∎
+#+end_src
 
--- [1] A relation is said to be a congruence relative to a given
--- function if it is preserved by application of the function. The
--- recursive application of the function (+-assoc n m k) has the type
--- of the induction hypotheis and `cong suc` prefaces `suc` to each
--- side of the equation; establishing evidence for the hypotheis.
--- See: plfa Ch 2. Induction.lagda.md
+1. A relation is said to be a /congruence/ relative to a given
+function if it is preserved by application of the function. The
+recursive application of the function =(+-assoc n m k)= has the type
+of the induction hypotheis and =cong suc= prefaces =suc= to each
+side of the equation; establishing evidence for the hypotheis:
+[[https://plfa.github.io/Induction/][Programming Language Foundations in Agda Chapter 2. on Induction]]
 
--- Lemma 1.1 additive identity of 0
+** Lemma 1.1 additive identity of 0
+
+#+begin_src agda2
 +-identityʳ : ∀ (n : ℕ) → (n + zero) ≡ n
 +-identityʳ zero = refl
 +-identityʳ (suc n) = cong suc (+-identityʳ n)
@@ -135,6 +135,7 @@ infixl 6 _+_
 ** The mutiplicative monoid (ℕ,*,1)
 
 *** Defintion 2. inductive definition of multiplication
+
 #+begin_src agda2
 _*_ : ℕ → ℕ → ℕ
 zero    * _  = zero
@@ -142,6 +143,7 @@ zero    * _  = zero
 #+end_src
 
 *** Lemma 2.1 right multiplicative identity
+
 #+begin_src agda2
 *-identityʳ : ∀ (n : ℕ) → n * 1 ≡ n
 *-identityʳ zero = refl
@@ -156,6 +158,7 @@ zero    * _  = zero
 #+end_src
 
 *** Lemma 2.2 left multiplicative identity
+
 #+begin_src agda2
 *-identityˡ : ∀ (n : ℕ) → 1 * n ≡ n
 *-identityˡ zero = refl
@@ -170,6 +173,7 @@ zero    * _  = zero
 #+end_src
 
 *** Theorem 2. multiplication distributes over addition
+
 #+begin_src agda2
 *-distrib-+ : ∀ (m n p : ℕ) -> (m + n) * p ≡ m * p + n * p
 *-distrib-+ zero n p =
@@ -201,6 +205,7 @@ zero    * _  = zero
 #+end_src
 
 *** Theorem 3. Associativity of multiplication
+
 #+begin_src agda2
 *-assoc : ∀ (n m l : ℕ) -> (n * m) * l ≡ n * (m * l)
 *-assoc zero _ _ = refl
@@ -256,9 +261,11 @@ finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl
 
 
 ** Even and Odd Naturals
+
 *** Definitions
 
 Nota: forward declaration of mutually recursive types.
+
 #+begin_src agda2
 data even : ℕ → Set
 data odd : ℕ → Set
@@ -282,7 +289,47 @@ data odd where
     → odd (suc n)
 #+end_src
 
+*** Additional even is commutative: to explore rewrite/with/aux function
+
+See the following SO question: [[https://proofassistants.stackexchange.com/questions/3826/how-to-convert-agdas-with-statement-to-a-helper-function][with desugared to helper]]
+
+Use =rewrite= sugar and commutatvity of +
+
+#+begin_src agda2
+even-comm : ∀ (m n : ℕ)
+  → even (m + n)
+     ------------
+  → even (n + m)
+even-comm m n p rewrite +-comm m n = p  
+#+end_src
+
+Using =with= and =simultaneous abstraction=: [[https://agda.readthedocs.io/en/latest/language/with-abstraction.html#simultaneous-abstraction][Agda reference manual]]
+
+#+begin_src agda2
+even-comm' : ∀ (m n : ℕ)
+  → even (m + n)
+     ------------
+  → even (n + m)
+even-comm' m n p with m + n   | +-comm m n
+...                | .(n + m) | refl = p
+#+end_src
+
+This using a helper function to do the job of the above
+which I find much clearer tbh.
+
+#+begin_src agda2
+even-comm'' : ∀ (m n : ℕ)
+  → even (m + n)
+     ------------
+  → even (n + m)
+even-comm'' m n p = helper-fn (m + n) (+-comm m n) p
+  where
+  helper-fn : (x : ℕ) → (x ≡ n + m) → even x → even (n + m)
+  helper-fn _ refl p = p
+#+end_src
+
 *** Prop 1: The sum of two even numbers is even
+
 #+begin_src agda2
 e+e≡e : ∀ {m n : ℕ}
   → even m
@@ -292,6 +339,7 @@ e+e≡e : ∀ {m n : ℕ}
 #+end_src
 
 *** Prop 2: The sum of an even and odd number is odd
+
 #+begin_src agda2
 o+e≡o : ∀ {m n : ℕ}
   → odd m
@@ -301,6 +349,7 @@ o+e≡o : ∀ {m n : ℕ}
 #+end_src
 
 *** Proofs of Prop 1 and 2 (mutually recursive)
+
 #+begin_src agda2
 e+e≡e zero     en = en
 e+e≡e (suc om) en = suc (o+e≡o om en)
@@ -309,6 +358,7 @@ o+e≡o (suc em) en = suc (e+e≡e em en)
 #+end_src
 
 *** Prop 3: The sum of two odd numbers is even
+
 #+begin_src agda2
 o+o≡e : ∀ {m n : ℕ}
   → odd m
@@ -318,4 +368,18 @@ o+o≡e : ∀ {m n : ℕ}
 
 o+o≡e (suc zero) on = suc on
 o+o≡e (suc (suc om)) on = suc (suc (o+o≡e om on))
+#+end_src
+
+
+** Equality for ℕ
+
+TODO
+
+I first did this proof by contradiction (I prefer to think of it as
+falsehood) in Idris following the nice way it helps factor out all the
+required lemma and case splits. We shall do the same in Agda ab-initio
+or first principles following PLFA Chapter on Negation.
+
+#+begin_src agda2
+
 #+end_src
