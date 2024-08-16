@@ -3,7 +3,21 @@
 
 * Natural Numbers
 
+** Imports
+
+We eat our own dogfood and import locally made definitions rather than the
+standard library.
+
+#+begin_src agda2
+module Naturals where
+
+import Equality as Eq 
+open Eq using (_≡_; refl; cong; sym)
+open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
+#+end_src
+
 ** Define Peano's numbers
+
 #+begin_src agda2
 module Naturals where
 
@@ -11,16 +25,7 @@ data ℕ : Set where
   zero : ℕ
   suc  : ℕ → ℕ
 
--- So we can use decimal notation in Agda (used for shorthand in identities)
 {-# BUILTIN NATURAL ℕ #-}
-
-{- We use a DIY Equality module for now to show how the tools for step
-   by step equational reasoning work. In case of unexpected behaviour:
-   import Relation.Binary.PropositionalEquality as Eq instead. -}
- 
-import Equality as Eq 
-open Eq using (_≡_; refl; cong; sym)
-open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 #+end_src
 
 ** The additive monoid (ℕ,+,0)
@@ -36,6 +41,7 @@ infixl 6 _+_
 #+end_src
 
 ** Theorem 1. Associativity of addition
+
 #+begin_src agda2
 +-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k) -- the induction hypothesis
 +-assoc zero m k =
@@ -131,7 +137,6 @@ side of the equation; establishing evidence for the hypotheis:
   ∎
 #+end_src
 
-
 ** The mutiplicative monoid (ℕ,*,1)
 
 *** Defintion 2. inductive definition of multiplication
@@ -172,6 +177,39 @@ zero    * _  = zero
   ∎
 #+end_src
 
+*** Lemma 2.3 n times zero 
+
+#+begin_src agda2
+*-zero : (n : ℕ) → n * 0 ≡ 0
+*-zero zero = refl
+*-zero (suc n) = *-zero n
+#+end_src
+
+*** Lema 2.4 *-suc n
+
+#+begin_src agda2
+*-suc : ∀ m n → m * suc n ≡ m + m * n
+*-suc zero    n = refl
+*-suc (suc m) n =
+  begin
+    suc m * suc n
+  ≡⟨⟩
+    suc n + m * suc n
+  ≡⟨ cong (suc n +_) (*-suc m n) ⟩
+    suc n + (m + m * n)
+  ≡⟨⟩
+    suc (n + (m + m * n))
+  ≡⟨ cong suc (sym (+-assoc n m (m * n))) ⟩
+    suc (n + m + m * n)
+  ≡⟨ cong (λ x → suc (x + m * n)) (+-comm n m) ⟩
+    suc (m + n + m * n)
+  ≡⟨ cong suc (+-assoc m n (m * n)) ⟩
+    suc (m + (n + m * n))
+  ≡⟨⟩
+    suc m + suc m * n
+  ∎
+#+end_src
+
 *** Theorem 2. multiplication distributes over addition
 
 #+begin_src agda2
@@ -182,7 +220,7 @@ zero    * _  = zero
   ≡⟨⟩
      n * p
   ≡⟨⟩
-  zero * p + n * p
+    zero * p + n * p
   ∎
 *-distrib-+ (suc m) n p =
   begin
@@ -223,6 +261,23 @@ zero    * _  = zero
   ∎
 #+end_src
 
+*** TODO Commutativity of multiplication
+
+#+begin_src agda2
+*-comm : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm zero n = sym (*-zero n)
+*-comm (suc m) n =
+  begin
+    suc m * n
+  ≡⟨⟩
+    n + m * n
+  ≡⟨ cong (_+_ n) (*-comm m n) ⟩
+    n + n * m
+  ≡⟨ sym (*-suc n m) ⟩
+    n * suc m
+  ∎
+#+end_src
+
 
 ** Using ~rewrite~ for shorthand equational reasoning
 
@@ -239,7 +294,8 @@ zero    * _  = zero
 #+end_src
 
 ** A Finitist proof of associativty of addition
-Is this is cheating using refl?
+I don't think we were actually asked for this rigour; just describe the induction
+steps from a finitist perspective.
 
 #+begin_src agda2
 finite-+-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k)
@@ -258,7 +314,6 @@ finite-+-assoc zero zero (suc k) = refl
 finite-+-assoc zero (suc m) k = refl
 finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl
 #+end_src
-
 
 ** Even and Odd Naturals
 
@@ -369,7 +424,6 @@ o+o≡e : ∀ {m n : ℕ}
 o+o≡e (suc zero) on = suc on
 o+o≡e (suc (suc om)) on = suc (suc (o+o≡e om on))
 #+end_src
-
 
 ** Equality for ℕ
 

@@ -1,19 +1,18 @@
 #+TITLE: Relations in Agda
 #+SETUPFILE: org-source-setup.org
 
-* Preamble
+* Imports
 
 #+begin_src agda2
 module Relations where
 
-import Relation.Binary.PropositionalEquality as Eq
-open Eq using (_≡_; refl; cong)
+import Equality as Eq
+open Eq using (_≡_; refl; cong; cong-app)
+open Eq.≡-Reasoning
 
-import Data.Nat as Nats
-open Nats using (ℕ; zero; suc; _+_; _*_)
+import Naturals as Nat
+open Nat using (ℕ; zero; suc; _+_; +-comm; _*_; *-comm)
 
-import Data.Nat.Properties as NatProps
-open NatProps using (+-comm; *-distrib-+; *-comm)
 #+end_src
 
 * Ordering Relations
@@ -74,15 +73,6 @@ inv-z≤n : ∀ {m : ℕ}
   → m ≡ zero
 inv-z≤n z≤n = refl
 #+end_src
-
-** Ordering excercises
-
-1. Give a preorder that is not a partial order.
-xRx
-xRy yRz → xRz
--- not antisymmetric  xRy yRx x ≠ y
-
-2. give a partial order that is not a total order.
 
 ** Reflexivity
 

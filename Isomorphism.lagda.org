@@ -1,0 +1,25 @@
+#+TITLE:     Equality in Agda
+#+SETUPFILE: org-source-setup.org
+
+* Imports
+
+The idea is to eat our own dogfood here as far as possible.
+
+#+begin_src agda2
+import Naturals
+
+#+end_src
+* Function Composition
+
+#+begin_src agda2
+_∘_ : ∀ {A B C : Set} → (B → C) → (A → B) → (A → C)
+g ∘ f = λ x → g (f x)
+#+end_src
+
+* Extensionality
+
+Seem a bit weird defintion; I mean even over the Nats how can we be sure that
+two functions produce the same output (apart from running them over all inputs
+from the domain)? Doesn't seem very constructive to me.
+
+This is the converse of =cong-app= as we saw earlier [[file:Equality.lagda.org::66][definition]]

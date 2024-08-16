@@ -1,46 +1,51 @@
-#+TITLE:     Propositional Equality in Agda
+#+TITLE:     Equality in Agda
 #+SETUPFILE: org-source-setup.org
 
-* Propositional Equality 
+* Propositional Equality
 
 ** The Equality Type
+
 #+begin_src agda2
 module Equality where
 
-data _≡_ {A : Set} : A → A → Set where 
+data _≡_ {A : Set} : A → A → Set where
+
   refl : {x : A}
-      -----
-    → x ≡ x
+         ------
+       → x ≡ x
 
 infix 4 _≡_
-
 {-# BUILTIN EQUALITY _≡_ #-}
+
 #+end_src
 
 ** Symmetry of Equality
+
 #+begin_src agda2
 sym : {A : Set} {x y : A}
-  → x ≡ y
-    -----
-  → y ≡ x
+    → x ≡ y
+      -----
+    → y ≡ x
 sym refl = refl
 #+end_src
 
 ** Transitivity of equality
+
 #+begin_src agda2
 trans : {A : Set} {x y z : A}
-  → x ≡ y
-  → y ≡ z
-    -----
-  → x ≡ z
+      → x ≡ y
+      → y ≡ z
+        -----
+      → x ≡ z
 trans refl refl = refl
 #+end_src
 
 ** Congruence of equality
-Simply stated if x = y then f x = f y, to me this says as much about
+
+Simply stated if x = y then f x = f y. To me this says as much about
 what a function is as it does about the fact that functoriality
-respects equality, depends on your viewpoint; but it's a fundemental
-observation.
+respects equality. It depends on your viewpoint; but it's a fundemental
+observation from either perspective.
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
   → x ≡ y
@@ -50,6 +55,9 @@ cong f refl = refl
 #+end_src
 
 ** Congruence of equal function application
+
+Give two equal functions (or maps from one type to another) then given
+the same input they both give the same value.
 #+begin_src agda2
 cong-app : ∀ {A B : Set} {f g : A → B}
   → f ≡ g
@@ -59,6 +67,7 @@ cong-app refl x = refl
 #+end_src
 
 ** Substitution of equality
+
 If two values are equal and a predicate holds for one then it holds
 for the other.
 #+begin_src agda2
@@ -71,10 +80,11 @@ subst P refl x′ = x′
 
 ** Equational reasoning
 
-Some utilities - stolen from Core.agda to show how simple the magic
+Some utilities - here stolen from Core.agda to show how simple the magic
 is.  I'm always genuinely amazed by the power of the dependant type
-theory and the beauty of Agda as a language.
-
+theory and the beauty of Agda as a language. These also show up as a
+separate module in [cite:@plfa22.08] but I did these myself before
+embarking on that journey. 
 #+begin_src agda2
 module ≡-Reasoning {A : Set} where
   
@@ -119,3 +129,102 @@ module ≡-Reasoning {A : Set} where
 #+end_src
 
 
+* Leibniz equality
+
+This equality is based on the idea that two objects are equal if every
+property that holds for the one holds for the other and vice-a-versa.
+
+The operator symbol ≐ used here to represent this notion of equality
+is pronounced "approaches the limit".
+
+#+begin_src agda2
+_≐_ : ∀ {A : Set} (x y : A) → Set₁
+_≐_ {A} x y = ∀ (P : A → Set) → P x → P y
+#+end_src
+
+I find that an almost magical Agda definition: Let x and y be objects
+of type A. We say that x ≐ y holds if for every predicate P over type
+A we have that P x implies P y. The key is to read → as implication.
+
+Since equality is an equivalence relation we are obliged to show
+reflexivity, transitivity and symmetry:
+
+#+begin_src agda2
+refl-≐ : ∀ {A : Set} {x : A}
+  → x ≐ x
+refl-≐ P Px = Px
+#+end_src
+
+#+begin_src agda2
+trans-≐ : ∀ {A : Set} {x y z : A}
+  → x ≐ y
+  → y ≐ z
+  -------
+  → x ≐ z
+trans-≐ x≐y y≐z P Px = y≐z P (x≐y P Px)
+#+end_src
+
+Symmetry is more tricky: given a proof that x ≐ y we have to construct
+a proof that P y implies P x.
+
+#+begin_quote
+Given x ≐ y, a specific P, we have to construct a proof that P y
+implies P x. To do so, we instantiate the equality with a predicate Q
+such that Q z holds if P z implies P x. The property Q x is trivial by
+reflexivity, and hence Q y follows from x ≐ y. But Q y is exactly a
+proof of what we require, that P y implies P x.
+#+end_quote
+
+#+begin_src agda2
+sym-≐ : ∀ {A : Set} {x y : A}
+  → x ≐ y
+    -----
+  → y ≐ x
+sym-≐ {A} {x} {y} x≐y P = Qy
+  where
+    Q : A → Set
+    Q z = P z → P x
+    Qx : Q x
+    Qx = refl-≐ P
+    Qy : Q y
+    Qy = x≐y Q Qx
+#+end_src
+
+Now to show that Martin-Lof equality ≡ implies Leibniz equality ≐ and
+vice a versa.
+
+In the forward direction we need to show that if x ≡ y then any
+proof/evidence of P x is also a proof of P y, we can show this easily
+due to the substitution theorem which we showed earlier.
+
+#+begin_src agda2
+≡-implies-≐ : ∀ {A : Set} {x y : A}
+  → x ≡ y
+    -----
+  → x ≐ y
+≡-implies-≐ x≡y P = subst P x≡y 
+#+end_src
+
+In the reverse direction, given that for any P we can take a proof of
+P x to a proof of P y we need to show x ≡ y - this proof is
+(naturally) similar to the proof of symmetry of Leibniz equality.
+
+#+begin_src agda2
+≐-implies-≡ : ∀ {A : Set} {x y : A}
+  → x ≐ y
+    -----
+  → x ≡ y
+≐-implies-≡ {A} {x} {y} x≐y = Qy
+    where
+      Q : A → Set
+      Q z = x ≡ z
+      Qx : Q x
+      Qx = refl
+      Qy : Q y
+      Qy = x≐y Q Qx
+#+end_src
+
+
+* Universe polymorphism
+
+See [[https://agda.readthedocs.io/en/latest/language/sort-system.html#sort-system][Agda sort system documentation]]

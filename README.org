@@ -1,11 +1,5 @@
 #+TITLE: Learning Agda one Proof at a time
-#+AUTHOR: Simon Beaumont
-#+EMAIL: datalligator@icloud.com
-#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
-#+STARTUP: inlineimages overview latexpreview
-#+LATEX_HEADER: \usepackage{tikz}
-#+LATEX_HEADER: \usetikzlibrary{positioning}
-
+#+SETUPFILE: org-source-setup.org
 
 Following these great courses:
 ________________________________________________________________________________
@@ -21,9 +15,9 @@ With much practical help from:
 Jesper Cockx - /Programming and Proving in Agda./
 [[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf]]
 
-And some ideas and inspiration (as well as convincing me that unicode
-ligagtures and symbols are good for readability if used with sparsity
-and taste :)
+And some ideas and inspiration (as well as convincing me (by
+contradiction) that unicode ligagtures and symbols are good for
+readability if used with sparsity and taste :)
 
 Conor McBride - /CS410 Advanced Functional Programming/
 University of Strathclyde lecture series 2017
@@ -33,12 +27,23 @@ Video set compiled by Philip Zucker:
 
 ________________________________________________________________________________
 
-With thanks to the instructors and their students for the Agda foo and
-sharing the joy of machine checked proof. -- Simon Beaumont 2022
+With thanks to the instructors and their students for the all the Agda
+foo and sharing the joy of machine checked proof.
 
-And of course massive Kudos and gratitude to the creators and
+And of course massive kudos and gratitude to the creators and
 maintainers of Agda itself:
 
 [[https://agda.readthedocs.io][Read the docs]]
+
+-- Simon Beaumont 2022
+
+** TODO There seems to be some duplication of stuff in here
+See: Relations and Inequality for example.
+
+** TODO Be good if the whole thing compiled into a library.
+
+** TODO Translate all this into Lean4?
+
+
 
 

@@ -1,76 +1,39 @@
-#+TITLE: Propositional Inequality in Agda
-#+AUTHOR: Simon Beaumont
-#+EMAIL: datalligator@icloud.com
-#+BIBLIOGRAPHY: ~/Notes/bibliography.bib
-#+STARTUP: inlineimages overview latexpreview
-#+LATEX_HEADER: \usepackage{tikz}
-#+LATEX_HEADER: \usetikzlibrary{positioning}
+#+TITLE: Relational Reasoning
+#+SETUPFILE: org-source-setup.org
 
-* Propositional Inequality
+* Relational Reasoning 
 #+begin_src agda2
-import Data.Nat as Nats
+module Relational where
+import Naturals as Nats
 open Nats using (ℕ; zero; suc; _+_; _*_)
 
-import Data.Nat.Properties as NatProps
+import Naturals as NatProps
 open NatProps using (+-comm; *-distrib-+; *-comm)
 
-import Relation.Binary.PropositionalEquality as Eq
+import Equality as Eq
 open Eq using (_≡_; refl; cong)
+
+import Relations as Rel
+open Rel using (≤-refl; ≤-trans)
 #+end_src
 
-** The Inequality Type
-#+begin_src agda2
-module Inequality where
+* ≤-Reasoning
 
-data _≤_ : ℕ → ℕ → Set where
-  z≤n : ∀ {n : ℕ}
-      --------
-    → zero ≤ n
-
-  s≤s : ∀ {m n : ℕ}
-    → m ≤ n
-      -------------
-    → suc m ≤ suc n
-
-infix 4 _≤_
-#+end_src
-
-#+begin_src agda2
-≤-refl : ∀ {n : ℕ}
-    -----
-  → n ≤ n
-≤-refl {zero} = z≤n
-≤-refl {suc n} = s≤s ≤-refl
-#+end_src
-
-** Transitivity of Inequality
-#+begin_src agda2
-≤-trans : ∀ {l m n : ℕ}
-  → l ≤ m
-  → m ≤ n
-    -----
-  → l ≤ n
-≤-trans z≤n m≤n = z≤n
-≤-trans (s≤s l≤m) (s≤s m≤n) = s≤s (≤-trans l≤m m≤n)
-#+end_src
-
-** Inequality reasoning
-
-By anaology with ≡ an attempt to do the same tricks and prove things
+By anaology with ≡-Reasoning, attempt to do the same tricks and prove things
 in Relations a more clear way.
 
 #+begin_src agda2
 module ≤-Reasoning where
-  
+
   infix  3 _∎
   infixr 2 _≤⟨⟩_ step-≤ _≡⟨_⟩_
-  infix  1 begin_
+  infix  1 begin-≤_
 
-  begin_ : ∀ {x y : ℕ}
+  begin-≤_ : ∀ {x y : ℕ}
     → x ≤ y
       -----
     → x ≤ y
-  begin_ x≤y = x≤y
+  begin-≤_ x≤y = x≤y
 
   _≤⟨⟩_ : ∀ (x {y} : ℕ)
     → x ≤ y
@@ -101,7 +64,8 @@ module ≤-Reasoning where
   syntax step-≤  x y≤z x≤y = x ≤⟨ x≤y ⟩ y≤z
 #+end_src
 
-** Our task now is to prove mononicity
+
+** Our task now is to prove mononicity again
 
 #+begin_src agda2
 open ≤-Reasoning
@@ -126,23 +90,14 @@ open ≤-Reasoning
   ∎
 #+end_src
 
-*** If this is more illustrative then good.
 #+begin_src agda2
 +-monoˡ-≤ : ∀ (l m n : ℕ)
   → l ≤ m
     -------------
   → l + n ≤ m + n
-+-monoˡ-≤ l m n l≤m =
-  begin
-    l + n
-  ≡⟨ +-comm l n ⟩
-    n + l
-  ≤⟨ {!+-monoʳ-≤ l n m l≤m!} ⟩
-    n + m
-  ≡⟨ +-comm n m ⟩  
-    m + n
-  ∎
++-monoˡ-≤ l m n l≤m rewrite +-comm l n | +-comm m n = +-monoʳ-≤ n l m l≤m
 #+end_src
+
 
 #+begin_src agda2
 +-mono-≤ : ∀ (k l m n : ℕ)
