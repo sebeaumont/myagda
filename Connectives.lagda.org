@@ -1,0 +1,165 @@
+#+TITLE:     Logical Connectives
+#+SETUPFILE: org-source-setup.org
+
+* Preamble
+
+The idea is to always eat our own dogfood where possible.
+
+#+begin_src agda2
+open import Naturals using (ℕ)
+
+open import Equality using (_≡_; refl)
+open Equality.≡-Reasoning
+
+open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
+open Isomorphism.≃-Reasoning
+#+end_src
+
+* TODO Propositions as types - Curry-Howard correspondence 
+
+Propositions as types makes a strong connection between computational
+stuctures and constructions in logic. See also [[id:2AFE8BA1-E8D8-405F-B5D1-7DCB9BE3BDD9][Trinitarianism]] as I have a
+better table there.
+
+| Logic             | Computation             |
+|-------------------+-------------------------|
+| Conjunction (and) | Product                 |
+| Disjunction (or)  | Sum                     |
+| True              | Unit                    |
+| False             | Empty/Void              |
+| Implication (->)  | Function/Exponentiation |
+|                   |                         |
+
+Ed: since we do logic in the universes of =Set= in Agda we can overload our
+usual constructions to have logical meaning without making special
+isomorphic types with fancy names for doing proof. In other languages the
+domain of propositions can be distinct from the regular type universes -
+some Agda authors stick to the generic structures which means there's less
+to remember at the cost of some readability. See: [[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][Programming and Proving
+in Agda - Jesper Cockx]]. Also it's worth linking to impredicativity and
+universe stuff once we bring this stuff into Notes.
+
+* Conjunction is product
+With the two natural projections.
+
+If we define × as record type we get η-equality /definitionally/ which is
+more convenient:
+
+#+begin_src agda2
+record _×_ (A B : Set) : Set where
+  constructor ⟨_,_⟩
+  field
+    proj₁ : A
+    proj₂ : B
+open _×_
+
+η-× : ∀ {A B : Set} (w : A × B) → ⟨ proj₁ w , proj₂ w ⟩ ≡ w
+η-× w = refl -- no need to pattern match on constructor now
+#+end_src
+
+** Commutativity and Associativity
+Commutativity and associativity can be said to hold on products, /upto
+isomorphism/.
+
+#+begin_src agda2
+×-assoc : ∀ {A B C : Set} → (A × B) × C ≃ A × (B × C)
+×-assoc =
+  record
+    { to      = λ{ ⟨ ⟨ x , y ⟩ , z ⟩ → ⟨ x , ⟨ y , z ⟩ ⟩ }
+    ; from    = λ{ ⟨ x , ⟨ y , z ⟩ ⟩ → ⟨ ⟨ x , y ⟩ , z ⟩ }
+    ; from∘to = λ{ ⟨ ⟨ x , y ⟩ , z ⟩ → refl }
+    ; to∘from = λ{ ⟨ x , ⟨ y , z ⟩ ⟩ → refl }
+    }
+
+×-comm : ∀ {A B : Set} → A × B ≃ B × A
+×-comm =
+  record
+    { to       =  λ{ ⟨ x , y ⟩ → ⟨ y , x ⟩ }
+    ; from     =  λ{ ⟨ y , x ⟩ → ⟨ x , y ⟩ }
+    ; from∘to  =  λ{ ⟨ x , y ⟩ → refl }
+    ; to∘from  =  λ{ ⟨ y , x ⟩ → refl }
+    }
+#+end_src
+
+
+** Equivalence
+(⇔≃×) A ⇔ B is isomorphic to (A → B) × (B → A)
+
+#+begin_src agda2
+open _⇔_
+⇔≃× : ∀ {A B : Set} → A ⇔ B ≃ (A → B) × (B → A)
+⇔≃× =
+    record
+      { to   = λ a⇔b → ⟨ to a⇔b , from a⇔b ⟩
+      ; from = λ ab×ba → record { to = proj₁ ab×ba; from = proj₂ ab×ba }
+      ; from∘to = λ a⇔b → refl
+      ; to∘from = λ ab×ba →
+        begin
+          ⟨ to record { to = proj₁ ab×ba; from = proj₂ ab×ba }
+          , from record { to = proj₁ ab×ba; from = proj₂ ab×ba } ⟩
+        ≡⟨⟩
+          ⟨ proj₁ ab×ba , proj₂ ab×ba ⟩
+        ≡⟨ η-× ab×ba ⟩
+          ab×ba
+        ∎
+      }
+#+end_src
+
+* DOING Truth is unit
+True is a unit type for which there is only one uninteresting constructor
+again we can use a record and again get η-equality off the bat
+definitionally, so to speak. The type is called /top/ and denoted =⊤= as it is
+the "top" of the type lattice.
+#+begin_src agda2
+record ⊤ : Set where
+  constructor t
+
+η-⊤ : ∀ (w : ⊤) → t ≡ w
+η-⊤ w = refl
+
+#+end_src
+Agda always knows when it's time for =t=!
+#+begin_src agda2
+truth : ⊤
+truth = t
+#+end_src
+** TODO isomorphic identity of ⊤
+* DOING Disjunction is sum
+We jump right in now and define disjoint union or sum type as the logical
+equivalent of or.
+#+begin_src agda2
+data _⨄_ (A B : Set) : Set where
+  inj₁ : A → A ⨄ B              -- often inl (⨄-I₁)
+  inj₂ : B → A ⨄ B              -- and inr (⨄-I₂) in some texts
+
+infixr 1 _⨄_                    -- weakest binding
+#+end_src
+
+Ed: I'm sometimes dropping the nice rule comment annotation at this
+point as I think its not such an aid to readability as now we are familiar
+with what's going on.
+
+Ed: Some links/words on: introduction and elimination, constructors and
+destructors, patterns and copatterns would follow the main text here. It's
+also worth mentioning how induction eliminators are created in say Lean
+and contrast this with Agda (dependent pattern matching?).
+
+We can make the case for case to eliminate the disjunction (⨄-E):
+
+#+begin_src agda2
+case-⨄ : ∀ {A B C : Set}
+  → (A → C)
+  → (B → C)
+  → A ⨄ B
+    ----------
+  → C
+case-⨄ f g (inj₁ x) = f x
+case-⨄ f g (inj₂ x) = g x
+
+η-⨄ : ∀ {A B : Set} (w : A ⨄ B) → case-⨄ inj₁ inj₂ w ≡ w
+η-⨄ (inj₁ x) = refl
+η-⨄ (inj₂ x) = refl
+#+end_src
+* TODO Falsity
+* TODO Implication
+* TODO Distribution

@@ -2,10 +2,10 @@
 #+SETUPFILE: org-source-setup.org
 
 * Propositional Equality
-
 ** The Equality Type
 
 #+begin_src agda2
+{-# OPTIONS --safe #-}
 module Equality where
 
 data _≡_ {A : Set} : A → A → Set where
@@ -46,6 +46,7 @@ Simply stated if x = y then f x = f y. To me this says as much about
 what a function is as it does about the fact that functoriality
 respects equality. It depends on your viewpoint; but it's a fundemental
 observation from either perspective.
+
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
   → x ≡ y
@@ -56,8 +57,9 @@ cong f refl = refl
 
 ** Congruence of equal function application
 
-Give two equal functions (or maps from one type to another) then given
+Given two equal functions (or maps from one type to another) then given
 the same input they both give the same value.
+
 #+begin_src agda2
 cong-app : ∀ {A B : Set} {f g : A → B}
   → f ≡ g
@@ -70,6 +72,7 @@ cong-app refl x = refl
 
 If two values are equal and a predicate holds for one then it holds
 for the other.
+
 #+begin_src agda2
 subst : ∀ {A : Set} {x y : A} (P : A → Set)
   → x ≡ y
@@ -85,6 +88,7 @@ is.  I'm always genuinely amazed by the power of the dependant type
 theory and the beauty of Agda as a language. These also show up as a
 separate module in [cite:@plfa22.08] but I did these myself before
 embarking on that journey. 
+
 #+begin_src agda2
 module ≡-Reasoning {A : Set} where
   

@@ -1,7 +1,7 @@
 #+TITLE: Relations in Agda
 #+SETUPFILE: org-source-setup.org
 
-* Imports
+* Preamble
 
 #+begin_src agda2
 module Relations where

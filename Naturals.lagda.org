@@ -59,19 +59,20 @@ infixl 6 _+_
     suc (n + m) + k
   ≡⟨⟩
     suc ((n + m) + k)           -- work down simplifying
-  ≡⟨ cong suc (+-assoc n m k) ⟩  -- this step needs some explanation: 1.
+  ≡⟨ cong suc (+-assoc n m k) ⟩ -- this step needs some explanation: 1.
     suc (n + (m + k))           -- work up from goal simplifying
   ≡⟨⟩
-    suc n + (m + k)             -- goal
+    suc n + (m + k)             -- goal!
   ∎
 #+end_src
 
 1. A relation is said to be a /congruence/ relative to a given
-function if it is preserved by application of the function. The
-recursive application of the function =(+-assoc n m k)= has the type
-of the induction hypotheis and =cong suc= prefaces =suc= to each
-side of the equation; establishing evidence for the hypotheis:
-[[https://plfa.github.io/Induction/][Programming Language Foundations in Agda Chapter 2. on Induction]]
+function (in this case the constructor =suc),= if it is preserved by
+application of the function. The recursive application of the function
+=(+-assoc n m k)= has the type of the induction hypotheis and =cong suc=
+prefaces =suc= to each side of the equation; establishing evidence for the
+hypotheis: [[https://plfa.github.io/Induction/][Programming Language Foundations in Agda Chapter 2. on
+Induction]]
 
 ** Lemma 1.1 additive identity of 0
 
@@ -294,8 +295,8 @@ zero    * _  = zero
 #+end_src
 
 ** A Finitist proof of associativty of addition
-I don't think we were actually asked for this rigour; just describe the induction
-steps from a finitist perspective.
+I don't think we were actually asked for this; but only to describe the
+induction steps from a finitist perspective.
 
 #+begin_src agda2
 finite-+-assoc : ∀ (n m k : ℕ) → (n + m) + k ≡ n + (m + k)
@@ -309,7 +310,7 @@ finite-+-assoc 1 0 0 = refl
 finite-+-assoc 1 0 1 = refl
 finite-+-assoc 1 1 0 = refl
 finite-+-assoc 1 1 1 = refl
--- and then I gave up... but Agda gave me a clue...
+-- and then I gave up writing stuff out... but Agda gave me a clue...
 finite-+-assoc zero zero (suc k) = refl
 finite-+-assoc zero (suc m) k = refl
 finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl

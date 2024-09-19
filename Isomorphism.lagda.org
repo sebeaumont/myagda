@@ -1,14 +1,16 @@
-#+TITLE:     Equality in Agda
+#+TITLE:     Isomorphism
 #+SETUPFILE: org-source-setup.org
 
-* Imports
+* Preamble
 
 The idea is to eat our own dogfood here as far as possible.
 
 #+begin_src agda2
-import Naturals
-
+open import Naturals
+open import Equality
+open Equality.≡-Reasoning
 #+end_src
+
 * Function Composition
 
 #+begin_src agda2
@@ -18,8 +20,365 @@ g ∘ f = λ x → g (f x)
 
 * Extensionality
 
-Seem a bit weird defintion; I mean even over the Nats how can we be sure that
-two functions produce the same output (apart from running them over all inputs
-from the domain)? Doesn't seem very constructive to me.
+This seems a strange defintion; I mean even over the Nats how can we be sure that
+two functions produce the same output (apart from running them over all possible
+inputs from the infinite domain){!!} Doesn't seem very constructive to me. I
+wonder what Bishop and Brouwer would say?
 
-This is the converse of =cong-app= as we saw earlier [[file:Equality.lagda.org::66][definition]]
+This is the converse of =cong-app= as we saw in the earlier [[file:Equality.lagda.org::66][definition]]
+
+Agda does not presume extensionality, but we can postulate that it holds:
+
+That's because we can't prove extensionality as a theorem in MLTT and thereby
+hangs a tale of great significance. 
+
+#+begin_src agda2
+postulate
+  extensionality : ∀ {A B : Set} {f g : A → B}
+    → (∀ (x : A) → f x ≡ g x)
+      -----------------------
+    → f ≡ g
+#+end_src
+
+In cubical Agda we can prove functional extensionality and thus it becomes
+theorem:
+
+#+begin_src agda
+funExt : {f g : A → B} → (p : (x : A) → f x ≡ g x) → f ≡ g
+funExt p i x = p x i
+#+end_src
+
+Postulating extentionality in Agda/MLTT is ok according to the PLFA authors as
+this /axiom/ is consistent with the intuitionistic type theory and constructively
+does not affect computation.
+
+We can use this when we can show that functions always return the same result;
+consider an addition operator defined the other way round to +:
+
+#+begin_src agda2
+_+'_ : ℕ → ℕ → ℕ
+m +' zero = m
+m +' suc n = suc (m +' n)
+#+end_src
+
+Applying commutativity, it is easy to show that both operators always return the
+same result given the same arguments: (so is this an instance of the proof I
+wanted?) We have an equality proof of commuativity of addition by induction over
+𝐍 which we can use here. 
+
+[[id:80C26F92-669C-48C5-8247-F9EF51EC331B][Agda Notes]] (on rewrite/with abstraction)
+
+#+begin_src agda2
+same-by-app : ∀ (m n : ℕ) → m +' n ≡ m + n
+same-by-app m n rewrite +-comm m n = helper m n
+  where
+  helper : ∀ (m n : ℕ) → m +' n ≡ n + m
+  helper m zero = refl
+  helper m (suc n) = cong suc (helper m n)
+#+end_src
+
+We can however assert via extensionality that the two operators are actually
+indistinguishable:
+
+#+begin_src agda2
+same : _+'_ ≡ _+_
+same = extensionality (λ m → extensionality (λ n → same-by-app m n))
+#+end_src
+
+We need to postulate extensionality for dependent functions:
+
+#+begin_src agda2
+postulate 
+  Π-extensionality : ∀ {A : Set} {B : A → Set} {f g : ∀ (x : A) → B x}
+    → (∀ (x : A) → f x ≡ g x)
+      ----------------------
+    → f ≡ g
+#+end_src
+
+Axioms make me nervous. Can't use {-# OPTIONS --safe #-}
+
+* Isomorphism
+
+Two types (Sets) are isomorphic if they are in one-to-one
+correspondance.
+** ≃
+#+begin_src agda2
+infix 0 _≃_
+record _≃_ (A B : Set) : Set where
+  field
+    to : A → B
+    from : B → A
+    from∘to : ∀ (x : A) → from (to x) ≡ x
+    to∘from : ∀ (y : B) → to (from y) ≡ y
+open _≃_
+#+end_src
+
+To prove that Isomorphism is an equivalence relation we need to provide proofs
+of reflexivity, symmetry and transitivity in the usual way:
+
+** ≃ is reflexive
+#+begin_src agda2
+≃-refl : ∀ {A : Set}
+    -----
+  → A ≃ A
+≃-refl =
+  record
+    { to = λ{x → x}
+    ; from = λ{y → y}
+    ; from∘to = λ{x → refl}
+    ; to∘from = λ{y → refl}
+    }
+#+end_src
+
+** ≃ is symmetric
+To show that isomorhism is symmetric we simply swap the roles of the functions above:
+#+begin_src agda2
+≃-sym : ∀ {A B : Set}
+  → A ≃ B
+    -----
+  → B ≃ A
+≃-sym A≃B =
+  record
+    { to = from A≃B
+    ; from = to A≃B
+    ; from∘to = to∘from A≃B
+    ; to∘from = from∘to A≃B
+    }
+#+end_src
+
+** ≃ is transitive
+To show that isomorohism is transtive we compose the =to= and =from= functions and
+use equational reasoning to combine the inverses:
+#+begin_src agda2
+≃-trans : ∀ {A B C : Set}
+  → A ≃ B
+  → B ≃ C
+    -----
+  → A ≃ C
+≃-trans A≃B B≃C =
+  record
+    { to       = to B≃C ∘ to A≃B
+    ; from   = from A≃B ∘ from B≃C
+    ; from∘to = λ{x →
+        begin
+          (from A≃B ∘ from B≃C) ((to B≃C ∘ to A≃B) x)
+        ≡⟨⟩
+          from A≃B (from B≃C (to B≃C (to A≃B x)))
+        ≡⟨ cong (from A≃B) (from∘to B≃C (to A≃B x)) ⟩
+          from A≃B (to A≃B x)
+        ≡⟨ from∘to A≃B x ⟩
+          x
+        ∎}
+    ; to∘from = λ{y →
+        begin
+          (to B≃C ∘ to A≃B) ((from A≃B ∘ from B≃C) y)
+        ≡⟨⟩
+          to B≃C (to A≃B (from A≃B (from B≃C y)))
+        ≡⟨ cong (to B≃C) (to∘from A≃B (from B≃C y)) ⟩
+          to B≃C (from B≃C y)
+        ≡⟨ to∘from B≃C y ⟩
+          y
+        ∎}
+      }
+#+end_src
+
+We can now add syntax for equational reasoning via isomorphism.
+
+#+begin_src agda2
+module ≃-Reasoning where
+
+  infix  1 ≃-begin_
+  infixr 2 _≃⟨_⟩_
+  infix  3 _≃-∎
+
+  ≃-begin_ : ∀ {A B : Set}
+    → A ≃ B
+      -----
+    → A ≃ B
+  ≃-begin A≃B = A≃B
+
+  _≃⟨_⟩_ : ∀ (A : Set) {B C : Set}
+    → A ≃ B
+    → B ≃ C
+      -----
+    → A ≃ C
+  A ≃⟨ A≃B ⟩ B≃C = ≃-trans A≃B B≃C
+
+  _≃-∎ : ∀ (A : Set)
+      -----
+    → A ≃ A
+  A ≃-∎ = ≃-refl
+#+end_src
+
+* Embedding
+
+Embedding is a weakening of isomorphism that shows that the first type is
+included in the second but that the second type is in many-to-one correspondence
+with the first.
+
+** ∼< is embedding
+#+begin_src agda2
+infix 0 _≲_
+record _≲_ (A B : Set) : Set where
+    field
+      to   : A → B
+      from : B → A
+      from∘to : ∀ (x : A) → from (to x) ≡ x
+open _≲_
+#+end_src
+
+Embedding is reflexive and transitive, but not symmetric, however like orderings there
+is a notion of antisymmetry:
+
+** ∼< is reflexive
+#+begin_src agda2
+≲-refl : ∀ {A : Set} → A ≲ A
+≲-refl =
+  record
+    { to      = λ{x → x}
+    ; from    = λ{y → y}
+    ; from∘to = λ{x → refl}
+    }
+#+end_src
+
+** ∼< is transitive
+#+begin_src agda2
+≲-trans : ∀ {A B C : Set} → A ≲ B → B ≲ C → A ≲ C
+≲-trans A≲B B≲C =
+  record
+    { to      = λ{x → to   B≲C (to   A≲B x)}
+    ; from    = λ{y → from A≲B (from B≲C y)}
+    ; from∘to = λ{x →
+        begin
+          from A≲B (from B≲C (to B≲C (to A≲B x)))
+        ≡⟨ cong (from A≲B) (from∘to B≲C (to A≲B x)) ⟩
+          from A≲B (to A≲B x)
+        ≡⟨ from∘to A≲B x ⟩
+          x
+        ∎}
+    }
+#+end_src
+
+** ∼< is weakly anti-symmetric
+So here is the weak form of anti-symmetry that shows if A embeds in B and B
+embeds in A then they are isomorphic.
+
+#+begin_src agda2
+≲-antisym : ∀ {A B : Set}
+  → (A≲B : A ≲ B)
+  → (B≲A : B ≲ A)
+  → (to A≲B ≡ from B≲A)
+  → (from A≲B ≡ to B≲A)
+    -------------------
+  → A ≃ B
+≲-antisym A≲B B≲A to≡from from≡to =
+  record
+    { to      = to A≲B
+    ; from    = from A≲B
+    ; from∘to = from∘to A≲B
+    ; to∘from = λ{y →
+        begin
+          to A≲B (from A≲B y)
+        ≡⟨ cong (to A≲B) (cong-app from≡to y) ⟩
+          to A≲B (to B≲A y)
+        ≡⟨ cong-app to≡from (to B≲A y) ⟩
+          from B≲A (to B≲A y)
+        ≡⟨ from∘to B≲A y ⟩
+          y
+        ∎}
+    }
+#+end_src
+
+** Equational reasoning for embedding
+
+#+begin_src agda2
+module ≲-Reasoning where
+
+  infix  1 ≲-begin_
+  infixr 2 _≲⟨_⟩_
+  infix  3 _≲-∎
+
+  ≲-begin_ : ∀ {A B : Set}
+    → A ≲ B
+      -----
+    → A ≲ B
+  ≲-begin A≲B = A≲B
+
+  _≲⟨_⟩_ : ∀ (A : Set) {B C : Set}
+    → A ≲ B
+    → B ≲ C
+      -----
+    → A ≲ C
+  A ≲⟨ A≲B ⟩ B≲C = ≲-trans A≲B B≲C
+
+  _≲-∎ : ∀ (A : Set)
+      -----
+    → A ≲ A
+  A ≲-∎ = ≲-refl
+#+end_src
+
+* Iso-morhism implies an embedding
+#+begin_src agda2
+≃-implies-≲ : ∀ {A B : Set}
+  → A ≃ B
+    -----
+  → A ≲ B
+≃-implies-≲ A≃B =
+  record
+    { to = to A≃B
+      ; from = from A≃B
+      ; from∘to = from∘to A≃B
+      }
+#+end_src
+
+* Equivalence
+** ⇔ is iff or equivalence 
+#+begin_src agda2
+record _⇔_ (A B : Set) : Set where
+  field
+    to : A → B
+    from : B → A
+open _⇔_
+#+end_src
+
+So now to prove that equivalence is an equivalence relation
+(it had better be eh?)
+
+** ⇔ is reflexive
+#+begin_src agda2
+⇔-refl : {A : Set}
+  → A ⇔ A
+⇔-refl =
+  record
+    { to = λ{a → a}
+    ; from = λ{b → b}
+    }
+#+end_src
+
+** ⇔ is symmetric
+#+begin_src agda2
+⇔-sym : {A B : Set}
+  → A ⇔ B
+    -----
+  → B ⇔ A
+⇔-sym A⇔B =
+  record
+    { to = from A⇔B
+    ; from = to A⇔B
+    }
+#+end_src
+
+** ⇔ is transitive
+#+begin_src agda2
+⇔-trans : {A B C : Set}
+  → A ⇔ B
+  → B ⇔ C
+    ------
+  → A ⇔ C
+⇔-trans A⇔B B⇔C =
+  record
+    { to = (to B⇔C) ∘ (to A⇔B)
+    ; from = (from A⇔B) ∘ (from B⇔C)
+    }
+#+end_src
+∎
