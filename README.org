@@ -4,7 +4,7 @@
 [[./320px-Agda's_official_logo.svg.png]]
 
 * Following these great courses:
-________________________________________________________________________________
+___________________________________________________
 
 Mainly the first part of:
 
@@ -33,7 +33,7 @@ reader rather than a CS major; but as ever Sandy has been in quite deep
 and disovered a few Agda hints, tip and techniques which are not
 documented elsewhere (other then the reference manual I guess).
 
-________________________________________________________________________________
+_________________________________________________
 
 With thanks to the instructors and their students for the all the Agda
 foo and sharing the joy of machine checked proof.
