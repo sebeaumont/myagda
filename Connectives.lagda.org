@@ -112,31 +112,32 @@ definitionally, so to speak. The type is called /top/ and denoted =⊤= as it is
 the "top" of the type lattice.
 #+begin_src agda2
 record ⊤ : Set where
-  constructor t
+  constructor tt
 
-η-⊤ : ∀ (w : ⊤) → t ≡ w
+η-⊤ : ∀ (w : ⊤) → tt ≡ w
 η-⊤ w = refl
 
 #+end_src
-Agda always knows when it's time for =t=!
+Agda always knows when it's time for =t=, perhaps she'll lay a little egg
+for me!
 #+begin_src agda2
 truth : ⊤
-truth = t
+truth = tt
 #+end_src
 ** TODO isomorphic identity of ⊤
 * DOING Disjunction is sum
 We jump right in now and define disjoint union or sum type as the logical
 equivalent of or.
 #+begin_src agda2
-data _⨄_ (A B : Set) : Set where
-  inj₁ : A → A ⨄ B              -- often inl (⨄-I₁)
-  inj₂ : B → A ⨄ B              -- and inr (⨄-I₂) in some texts
+data _⊎_ (A B : Set) : Set where
+  inj₁ : A → A ⊎ B              -- often inl (⊎-I₁)
+  inj₂ : B → A ⊎ B              -- and inr (⊎-I₂) in some texts
 
-infixr 1 _⨄_                    -- weakest binding
+infixr 1 _⊎_                    -- weakest binding
 #+end_src
 
 Ed: I'm sometimes dropping the nice rule comment annotation at this
-point as I think its not such an aid to readability as now we are familiar
+point as I think it's not such an aid to readability as now we are familiar
 with what's going on.
 
 Ed: Some links/words on: introduction and elimination, constructors and
@@ -144,22 +145,47 @@ destructors, patterns and copatterns would follow the main text here. It's
 also worth mentioning how induction eliminators are created in say Lean
 and contrast this with Agda (dependent pattern matching?).
 
-We can make the case for case to eliminate the disjunction (⨄-E):
+We can make the case for case to eliminate the disjunction (⊎-E):
 
 #+begin_src agda2
-case-⨄ : ∀ {A B C : Set}
+case-⊎ : ∀ {A B C : Set}
   → (A → C)
   → (B → C)
-  → A ⨄ B
-    ----------
+  → A ⊎ B
+    -------
   → C
-case-⨄ f g (inj₁ x) = f x
-case-⨄ f g (inj₂ x) = g x
+case-⊎ f g (inj₁ x) = f x
+case-⊎ f g (inj₂ x) = g x
 
-η-⨄ : ∀ {A B : Set} (w : A ⨄ B) → case-⨄ inj₁ inj₂ w ≡ w
-η-⨄ (inj₁ x) = refl
-η-⨄ (inj₂ x) = refl
+η-⊎ : ∀ {A B : Set} (w : A ⊎ B) → case-⊎ inj₁ inj₂ w ≡ w
+η-⊎ (inj₁ x) = refl
+η-⊎ (inj₂ x) = refl
 #+end_src
+
+We can throw in an arbitrary function with a disjunction:
+#+begin_src agda2
+uniq-⊎ : ∀ {A B C : Set} (h : A ⊎ B → C) (w : A ⊎ B) →
+  case-⊎ (h ∘ inj₁) (h ∘ inj₂) w ≡ h w
+uniq-⊎ h (inj₁ x) = refl
+uniq-⊎ h (inj₂ y) = refl
+#+end_src
+
 * TODO Falsity
+False is a never to be constructed type; the void or empty type, also
+known as =bottom= (⊥) and negation is a function that returns bottom for any
+type, the elimination of bottom implies ex falso quadlibet (EFQ) and uses
+the /absurd/ value which can never pattern match.
+#+begin_src agda2
+data ⊥ : Set where
+
+⊥-elim : {A : Set} → ⊥ → A
+⊥-elim ()
+
+-- This comes in the next chapter on negation but I am hoping
+-- here to render all proofs of ⊥ the same regardless of A.
+¬_ : Set → Set
+¬ A = .A → ⊥
+
+#+end_src
 * TODO Implication
 * TODO Distribution
