@@ -320,7 +320,9 @@ finite-+-assoc (suc n) m k rewrite finite-+-assoc n m k = refl
 
 *** Definitions
 
-Nota: forward declaration of mutually recursive types.
+Nota: forward declaration of mutually recursive types.  We can also
+declare mutally recursive blocks... by the more flexible [[https://agda.readthedocs.io/en/latest/language/mutual-recursion.html#interleaved-mutual-blocks][interleaved
+mutual]].
 
 #+begin_src agda2
 data even : ℕ → Set
@@ -347,9 +349,8 @@ data odd where
 
 *** Additional even is commutative: to explore rewrite/with/aux function
 
-See the following SO question: [[https://proofassistants.stackexchange.com/questions/3826/how-to-convert-agdas-with-statement-to-a-helper-function][with desugared to helper]]
-
-Use =rewrite= sugar and commutatvity of +
+Use [[https://agda.readthedocs.io/en/latest/language/with-abstraction.html#with-rewrite][rewrite]] and commutatvity of +
+Also: See the following SO question: [[https://proofassistants.stackexchange.com/questions/3826/how-to-convert-agdas-with-statement-to-a-helper-function][with desugared to helper]]
 
 #+begin_src agda2
 even-comm : ∀ (m n : ℕ)
@@ -370,8 +371,9 @@ even-comm' m n p with m + n   | +-comm m n
 ...                | .(n + m) | refl = p
 #+end_src
 
-This using a helper function to do the job of the above
-which I find much clearer tbh.
+This using a helper function to do the job of the above which I find much
+clearer tbh, which is what Agda does when de-sugaring the =with= clause.
+[[https://agda.readthedocs.io/en/latest/language/with-abstraction.html#helper-functions][Agda manual: with helper functions]]
 
 #+begin_src agda2
 even-comm'' : ∀ (m n : ℕ)
@@ -414,7 +416,6 @@ o+e≡o (suc em) en = suc (e+e≡e em en)
 #+end_src
 
 *** Prop 3: The sum of two odd numbers is even
-
 #+begin_src agda2
 o+o≡e : ∀ {m n : ℕ}
   → odd m
@@ -426,14 +427,11 @@ o+o≡e (suc zero) on = suc on
 o+o≡e (suc (suc om)) on = suc (suc (o+o≡e om on))
 #+end_src
 
-** Equality for ℕ
+** TODO Equality for ℕ
 
-TODO
-
-I first did this proof by contradiction (I prefer to think of it as
-falsehood) in Idris following the nice way it helps factor out all the
-required lemma and case splits. We shall do the same in Agda ab-initio
-or first principles following PLFA Chapter on Negation.
+Nota: I first did this proof in Idris following the nice way it helps
+factor out all the required lemma and case splits. We shall do the same in
+Agda ab-initio or first principles following PLFA Chapter on Negation.
 
 #+begin_src agda2
 

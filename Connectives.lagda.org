@@ -15,31 +15,38 @@ open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
 open Isomorphism.≃-Reasoning
 #+end_src
 
-* TODO Propositions as types - Curry-Howard correspondence 
+* DOING Propositions as types - Curry-Howard correspondence
 
-Propositions as types makes a strong connection between computational
-stuctures and constructions in logic. See also [[id:2AFE8BA1-E8D8-405F-B5D1-7DCB9BE3BDD9][Trinitarianism]] as I have a
-better table there.
+/Propositions as types/ leverages the isomorpism between computational
+stuctures and constructions in logic. See also [[id:2AFE8BA1-E8D8-405F-B5D1-7DCB9BE3BDD9][Trinitarianism]] and the
+Categorical perspective.
 
-| Logic             | Computation             |
-|-------------------+-------------------------|
-| Conjunction (and) | Product                 |
-| Disjunction (or)  | Sum                     |
-| True              | Unit                    |
-| False             | Empty/Void              |
-| Implication (->)  | Function/Exponentiation |
-|                   |                         |
+| Concept                   | Computation                   | Logic |
+|---------------------------+-------------------------------+-------|
+| Conjunction (and)         | Product (×)                   | ∧     |
+| Disjunction (or)          | Disjoint Sum/Union (⊎)         | ∨     |
+| True                      | Unit (𝟏)                       | ⊤     |
+| False                     | Empty/Void (𝟎)                 | ⊥     |
+| Implication (→)           | Function/Exponentiation (A→B) | ⇒     |
+| Universal Quantification  | Dependent Function (Π)        | ∀     |
+| Existential Qantification | Dependent Pair (Σ)            | ∃     |
 
-Ed: since we do logic in the universes of =Set= in Agda we can overload our
+
+Since in Agda we do logic in the universes of =Set= in we can overload our
 usual constructions to have logical meaning without making special
-isomorphic types with fancy names for doing proof. In other languages the
-domain of propositions can be distinct from the regular type universes -
-some Agda authors stick to the generic structures which means there's less
-to remember at the cost of some readability. See: [[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][Programming and Proving
-in Agda - Jesper Cockx]]. Also it's worth linking to impredicativity and
-universe stuff once we bring this stuff into Notes.
+corresponding types with fancy names for doing proof. In other languages the
+domain of propositions is distinct from the regular type universes.
+
+Some Agda authors stick to the generic computation/category structures
+which means there's less to remember at the cost of some readability. See:
+[[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][Programming and Proving in Agda - Jesper Cockx]].
+
+Ed: Also it's worth linking to impredicativity and universe stuff, see
+also Agda's impredicative =Prop= and Lean4 for references.
+
 
 * Conjunction is product
+
 With the two natural projections.
 
 If we define × as record type we get η-equality /definitionally/ which is
@@ -105,27 +112,31 @@ open _⇔_
       }
 #+end_src
 
+
 * DOING Truth is unit
 True is a unit type for which there is only one uninteresting constructor
 again we can use a record and again get η-equality off the bat
-definitionally, so to speak. The type is called /top/ and denoted =⊤= as it is
-the "top" of the type lattice.
+definitionally.
+The type is called /top/ and denoted =⊤= as it is the "top" of the type lattice.
 #+begin_src agda2
 record ⊤ : Set where
   constructor tt
 
 η-⊤ : ∀ (w : ⊤) → tt ≡ w
 η-⊤ w = refl
-
 #+end_src
-Agda always knows when it's time for =t=, perhaps she'll lay a little egg
+
+Agda always knows when it's time for =tt=; perhaps she'll lay a little egg
 for me!
 #+begin_src agda2
 truth : ⊤
 truth = tt
 #+end_src
+
 ** TODO isomorphic identity of ⊤
-* DOING Disjunction is sum
+
+* DONE Disjunction is sum
+
 We jump right in now and define disjoint union or sum type as the logical
 equivalent of or.
 #+begin_src agda2
@@ -136,16 +147,7 @@ data _⊎_ (A B : Set) : Set where
 infixr 1 _⊎_                    -- weakest binding
 #+end_src
 
-Ed: I'm sometimes dropping the nice rule comment annotation at this
-point as I think it's not such an aid to readability as now we are familiar
-with what's going on.
-
-Ed: Some links/words on: introduction and elimination, constructors and
-destructors, patterns and copatterns would follow the main text here. It's
-also worth mentioning how induction eliminators are created in say Lean
-and contrast this with Agda (dependent pattern matching?).
-
-We can make the case for case to eliminate the disjunction (⊎-E):
+We can make the case function to eliminate the disjunction (*⊎-E*):
 
 #+begin_src agda2
 case-⊎ : ∀ {A B C : Set}
@@ -160,7 +162,22 @@ case-⊎ f g (inj₂ x) = g x
 η-⊎ : ∀ {A B : Set} (w : A ⊎ B) → case-⊎ inj₁ inj₂ w ≡ w
 η-⊎ (inj₁ x) = refl
 η-⊎ (inj₂ x) = refl
+
 #+end_src
+Pattern matching against the constructors =inj₁= and =inj₂= is typical how we
+exploit evidence that a disjunction holds and indeed this form of
+elimination is a feature of Agda that obviates the need for explicit
+/recursors/ for inductive types.
+
+#+begin_quote
+When =inj₁= and =inj₂= appear on the right-hand side of an equation we refer
+to them as constructors, and when they appear on the left-hand side we
+refer to them as destructors. We also refer to case-⊎ as a destructor,
+since it plays a similar role. Other terminology refers to =inj₁= and =inj₂=
+as introducing a disjunction, and to =case-⊎= as eliminating a disjunction;
+indeed the former are sometimes given the names *⊎-I₁* and *⊎-I₂* and the
+latter the name *⊎-E*.
+#+end_quote
 
 We can throw in an arbitrary function with a disjunction:
 #+begin_src agda2
@@ -170,22 +187,86 @@ uniq-⊎ h (inj₁ x) = refl
 uniq-⊎ h (inj₂ y) = refl
 #+end_src
 
+** Ex. ⊎ is commutative upto isomorphism
+
+#+begin_src agda2
+-- lemma to go to and from A ⊎ B
+⊎-xin : {A B : Set} → A ⊎ B → B ⊎ A
+⊎-xin (inj₁ x) = inj₂ x
+⊎-xin (inj₂ y) = inj₁ y
+
+⊎-xin-elim : {A B : Set} → (w : A ⊎ B) → ⊎-xin (⊎-xin w) ≡ w
+⊎-xin-elim (inj₁ x) = refl
+⊎-xin-elim (inj₂ y) = refl
+
+-- we can now construct the iso-morphism
+⊎-comm : {A B : Set} → A ⊎ B ≃ B ⊎ A
+⊎-comm ._≃_.to = ⊎-xin
+⊎-comm ._≃_.from = ⊎-xin
+⊎-comm ._≃_.from∘to = ⊎-xin-elim
+⊎-comm ._≃_.to∘from = ⊎-xin-elim
+#+end_src
+
+** Ex. ⊎ is associative up to isomorphism
+
+Here I did no work at all;  apart write out the type and then ask Agda to
+case split, pattern match and fill in the obvious constors! Awesome.
+I renamed the variables to make it a bit more obvious what's being
+matched.
+
+#+begin_src agda2
+⊎-assoc : {A B C : Set} → A ⊎ (B ⊎ C) ≃ (A ⊎ B) ⊎ C
+⊎-assoc ._≃_.to (inj₁ a) = inj₁ (inj₁ a)
+⊎-assoc ._≃_.to (inj₂ (inj₁ b)) = inj₁ (inj₂ b)
+⊎-assoc ._≃_.to (inj₂ (inj₂ c)) = inj₂ c
+
+⊎-assoc ._≃_.from (inj₁ (inj₁ a)) = inj₁ a
+⊎-assoc ._≃_.from (inj₁ (inj₂ b)) = inj₂ (inj₁ b)
+⊎-assoc ._≃_.from (inj₂ c) = inj₂ (inj₂ c)
+
+⊎-assoc ._≃_.from∘to (inj₁ a) = refl
+⊎-assoc ._≃_.from∘to (inj₂ (inj₁ b)) = refl
+⊎-assoc ._≃_.from∘to (inj₂ (inj₂ c)) = refl
+
+⊎-assoc ._≃_.to∘from (inj₁ (inj₁ a)) = refl
+⊎-assoc ._≃_.to∘from (inj₁ (inj₂ b)) = refl
+⊎-assoc ._≃_.to∘from (inj₂ c) = refl
+#+end_src
+
 * TODO Falsity
-False is a never to be constructed type; the void or empty type, also
-known as =bottom= (⊥) and negation is a function that returns bottom for any
-type, the elimination of bottom implies ex falso quadlibet (EFQ) and uses
-the /absurd/ value which can never pattern match.
+
+False is a never-to-be-constructed type, that is, the /void/ or /empty/ type,
+also known as =bottom= (⊥) and negation is a function that returns bottom
+for any type, the elimination of bottom implies ex-falso quodlibet (EFQ)
+and uses the /absurd/ value which can never pattern match.
+
 #+begin_src agda2
 data ⊥ : Set where
 
 ⊥-elim : {A : Set} → ⊥ → A
 ⊥-elim ()
 
--- This comes in the next chapter on negation but I am hoping
--- here to render all proofs of ⊥ the same regardless of A.
+-- Negation comes in the next chapter. Here we mark the input type
+-- as irrelevant:
+
 ¬_ : Set → Set
 ¬ A = .A → ⊥
 
+uniq-⊥ : ∀ {C : Set} (h : ⊥ → C) (w : ⊥) → ⊥-elim w ≡ h w
+uniq-⊥ h ()
 #+end_src
+
+** ⊥-identity⃖ up to isomorphism 
+
+#+begin_src agda2
+#+end_src
+
+** ⊥-identity⃑ up to isomorphism
+
+#+begin_src agda2
+
+#+end_src
+
 * TODO Implication
+
 * TODO Distribution
