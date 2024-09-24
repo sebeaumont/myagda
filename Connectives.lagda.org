@@ -44,7 +44,6 @@ which means there's less to remember at the cost of some readability. See:
 Ed: Also it's worth linking to impredicativity and universe stuff, see
 also Agda's impredicative =Prop= and Lean4 for references.
 
-
 * Conjunction is product
 
 With the two natural projections.
@@ -112,12 +111,16 @@ open _⇔_
       }
 #+end_src
 
+* Truth is unit
 
-* DOING Truth is unit
-True is a unit type for which there is only one uninteresting constructor
-again we can use a record and again get η-equality off the bat
+/True/ is the unit type for which there is only one uninteresting constructor.
+Once again we can use a record and again get /η-equality/ off the bat
 definitionally.
-The type is called /top/ and denoted =⊤= as it is the "top" of the type lattice.
+
+In logic we call the true top /top/ and denoted =⊤= as it is the "top" of the
+type lattice; the single constructor is called =tt= to stand for /true is
+true/.
+
 #+begin_src agda2
 record ⊤ : Set where
   constructor tt
@@ -127,7 +130,7 @@ record ⊤ : Set where
 #+end_src
 
 Agda always knows when it's time for =tt=; perhaps she'll lay a little egg
-for me!
+for me![fn:1]
 #+begin_src agda2
 truth : ⊤
 truth = tt
@@ -135,7 +138,7 @@ truth = tt
 
 ** TODO isomorphic identity of ⊤
 
-* DONE Disjunction is sum
+* Disjunction is sum
 
 We jump right in now and define disjoint union or sum type as the logical
 equivalent of or.
@@ -233,11 +236,11 @@ matched.
 ⊎-assoc ._≃_.to∘from (inj₂ c) = refl
 #+end_src
 
-* TODO Falsity
+* Falsity
 
 False is a never-to-be-constructed type, that is, the /void/ or /empty/ type,
 also known as =bottom= (⊥) and negation is a function that returns bottom
-for any type, the elimination of bottom implies ex-falso quodlibet (EFQ)
+(/false/) for any type. The elimination of bottom implies ex-falso quodlibet (EFQ)
 and uses the /absurd/ value which can never pattern match.
 
 #+begin_src agda2
@@ -246,27 +249,162 @@ data ⊥ : Set where
 ⊥-elim : {A : Set} → ⊥ → A
 ⊥-elim ()
 
--- Negation comes in the next chapter. Here we mark the input type
--- as irrelevant:
-
-¬_ : Set → Set
-¬ A = .A → ⊥
-
 uniq-⊥ : ∀ {C : Set} (h : ⊥ → C) (w : ⊥) → ⊥-elim w ≡ h w
 uniq-⊥ h ()
 #+end_src
 
-** ⊥-identity⃖ up to isomorphism 
+This comes in the next chapter on negation. But it's worth mentioning here.[fn:2]
+#+begin_src agda2
+¬_ : Set → Set
+¬ A = ⊥
+#+end_src
 
+** ⊥-identity⃖ of ⊎ up to isomorphism 
+
+
+#+begin_src agda2
+⊥-identity⃖ : ∀ {A : Set} → ⊥ ⊎ A ≃ A
+⊥-identity⃖ ._≃_.to (inj₂ x) = x
+⊥-identity⃖ ._≃_.from = inj₂
+⊥-identity⃖ ._≃_.from∘to (inj₂ x) = refl
+⊥-identity⃖ ._≃_.to∘from y = refl
+#+end_src
+
+** ⊥-identity⃑ of ⊎ up to isomorphism
+Bottom is the right identity of sums up to isomorphism.
+
+#+begin_src agda2
+⊥-identity⃑ : ∀ {A : Set} → A ⊎ ⊥ ≃ A
+⊥-identity⃑ ._≃_.to (inj₁ x) = x
+⊥-identity⃑ ._≃_.from = inj₁
+⊥-identity⃑ ._≃_.from∘to (inj₁ x) = refl
+⊥-identity⃑ ._≃_.to∘from y = refl
+#+end_src
+
+* Implication is function
+Function application or //modus ponens// turns evidence of A into B
+#+begin_src agda2
+→-elim : ∀ {A B : Set}
+  → (A → B)
+  → A
+    ------
+  → B
+→-elim f a = f a
+#+end_src
+
+Lambda abstraction is introduction and application is elimination.
+#+begin_src agda2
+η-→ : ∀ {A B : Set} (f : A → B) → (λ (x : A) → f x) ≡ f
+η-→ f = refl
+#+end_src
+
+The function space =A → B= is often called the /exponential/.
+
+/Currying/ (after Haskell Curry) transforms a function that takes a pair of
+arguments into a function that takes the first of the pair and returns a
+function that takes the second of the pair; /uncurrying/ transforms the
+latter into the former and is the inverse of curry:
+
+#+begin_src agda2
+curry : {A B C : Set} → (A × B → C) → (A → B → C)
+curry f a b = f ⟨ a , b ⟩
+
+uncurry :  {A B C : Set} → (A → B → C) → (A × B → C)
+uncurry f ⟨ a , b ⟩ = f a b
+#+end_src
+
+Currying of functions is isomporhic to exponentiation rule in arithmetic:
+=(p ^ n) ^ m  ≡  p ^ (n * m)=
+
+#+begin_src agda2
+currying : ∀ {A B C : Set} → (A → B → C) ≃ (A × B → C)
+currying ._≃_.to = uncurry
+currying ._≃_.from = curry
+currying ._≃_.from∘to = λ x → refl
+currying ._≃_.to∘from = λ y → refl
+#+end_src
+
+#+begin_comment 
+The main text of PLTA indicated the need of extensionality axiom in the
+last clause of the above isomorohism proof, having defined the two
+functions as above this seemed simpler. Find out why! I think the answer
+is the tendency to /right/ programming vs /left/ programming - nice that I
+discovered this on my own (well Agda steered me down this road) see:
+[[https://github.com/plfa/plfa.github.io/issues/428][GitHub issue 428]]
+#+end_comment 
+
+In arithmetic also have the rule for exponentials:
+=p ^ (n + m) = (p ^ n) * (p ^ m)=
+
+Which correponds to an isomorphism:
+#+begin_src agda2
+→-⊎-over-× : ∀ {A B C : Set} → (A ⊎ B → C) -> ((A → C) × (B → C))
+→-⊎-over-× f = ⟨ f ∘ inj₁ , f ∘ inj₂ ⟩ 
+
+→-×-under-⊎ : ∀ {A B C : Set} → ((A → C) × (B → C)) → (A ⊎ B → C)
+→-×-under-⊎ ⟨ f , g ⟩ = λ { (inj₁ x) → f x ; (inj₂ y) → g y }
+
+-- help with line 4!
+→-distrib-⊎ : ∀ {A B C : Set} → (A ⊎ B → C) ≃ ((A → C) × (B → C))
+→-distrib-⊎ ._≃_.to = →-⊎-over-×
+→-distrib-⊎ ._≃_.from = →-×-under-⊎
+→-distrib-⊎ ._≃_.from∘to f = extensionality λ{ (inj₁ x) → refl ; (inj₂ y) → refl }
+→-distrib-⊎ ._≃_.to∘from ⟨ f , g ⟩ = refl
+#+end_src
+
+Corresponding to the artihmetic rule:
+=(p * n) ^ m = (p ^ m) * (n ^ m)=
+
+We have the isomorphism:
+#+begin_src agda2
+→-distrib-× : ∀ {A B C : Set} → (A → B × C) ≃ (A → B) × (A → C)
+→-distrib-× ._≃_.to f = ⟨ proj₁ ∘ f , proj₂ ∘ f ⟩
+→-distrib-× ._≃_.from ⟨ g , h ⟩ = λ x → ⟨ g x , h x ⟩
+→-distrib-× ._≃_.from∘to f = refl
+→-distrib-× ._≃_.to∘from ⟨ g , h ⟩ = refl
+#+end_src
+#+begin_comment
+Another divergence here is that in the main text the proof of the =from∘to=
+left inverse required *both* =extensionality= and the =η-×= identity for
+products. In the version above Agda found that this was just =refl=. See
+comment above.
+#+end_comment
+
+* TODO Distributivity
+
+Products distribute over sums, up to isomorphism.
+#+begin_src agda2
+×-distrib-⊎ : ∀ {A B C : Set} → (A ⊎ B) × C ≃ (A × C) ⊎ (B × C)
+×-distrib-⊎ = {!!}
+#+end_src
+
+Sums do not distribute over products up to isomorphism but it is an embedding.
+#+begin_src agda2
+⊎-distrib-× : ∀ {A B C : Set} → (A × B) ⊎ C ≲ (A ⊎ C) × (B ⊎ C)
+⊎-distrib-× = {!!}
+#+end_src
+
+* TODO Exercises
+#+begin_src agda2
+⊎-weak-× : ∀ {A B C : Set} → (A ⊎ B) × C → A ⊎ (B × C)
+⊎-weak-× = {!!}
+#+end_src
+
+#+begin_src agda2
+⊎×-implies-×⊎ : ∀ {A B C D : Set} → (A × B) ⊎ (C × D) → (A ⊎ C) × (B ⊎ D)
+⊎×-implies-×⊎ = {!!}
+#+end_src
+
+Does the converse hold? If not why not, else give a proof.
 #+begin_src agda2
 #+end_src
 
-** ⊥-identity⃑ up to isomorphism
 
-#+begin_src agda2
+[fn:2] In the standard library this is more sophisticated as it marks the
+input type as irrelevant so that all proofs of false are equal. 
 
-#+end_src
-
-* TODO Implication
-
-* TODO Distribution
+[fn:1] Agda (a hen) is named after the Swedish song "Hönan Agda" and this
+also alludes to the theorem prover "Coq" named after Theirry
+Coquand. "Coq" is being rebranded as "Rocq" so maybe we can now all clean
+up our acts. Still Agda has a nicer logo. Another animal in this stable is
+"Idris" the dragon! No smutty connotations there.

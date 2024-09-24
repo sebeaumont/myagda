@@ -101,7 +101,9 @@ Axioms make me nervous. Can't use {-# OPTIONS --safe #-}
 
 Two types (Sets) are isomorphic if they are in one-to-one
 correspondance.
-** ≃
+
+** ≃ Isomorphism
+
 #+begin_src agda2
 infix 0 _≃_
 record _≃_ (A B : Set) : Set where
