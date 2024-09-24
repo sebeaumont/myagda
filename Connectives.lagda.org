@@ -6,6 +6,7 @@
 The idea is to always eat our own dogfood where possible.
 
 #+begin_src agda2
+module Connectives where
 open import Naturals using (ℕ)
 
 open import Equality using (_≡_; refl)
@@ -374,8 +375,21 @@ comment above.
 
 Products distribute over sums, up to isomorphism.
 #+begin_src agda2
+×-to-⊎ : ∀ {A B C : Set} → (A ⊎ B) × C → (A × C) ⊎ (B × C)
+×-to-⊎ ⟨ inj₁ a , c ⟩ = inj₁ ⟨ a , c ⟩
+×-to-⊎ ⟨ inj₂ b , c ⟩ = inj₂ ⟨ b , c ⟩
+
+×-from-⊎ : ∀ {A B C : Set} → ((A × C) ⊎ (B × C)) → (A ⊎ B) × C
+×-from-⊎ (inj₁ ac) = ⟨ inj₁ (ac .proj₁) , ac .proj₂ ⟩
+×-from-⊎ (inj₂ bc) = ⟨ inj₂ (bc .proj₁) , bc .proj₂ ⟩
+
 ×-distrib-⊎ : ∀ {A B C : Set} → (A ⊎ B) × C ≃ (A × C) ⊎ (B × C)
-×-distrib-⊎ = {!!}
+×-distrib-⊎ ._≃_.to = ×-to-⊎
+×-distrib-⊎ ._≃_.from = ×-from-⊎
+×-distrib-⊎ ._≃_.from∘to ⟨ inj₁ a , c ⟩ = refl
+×-distrib-⊎ ._≃_.from∘to ⟨ inj₂ b , c ⟩ = refl
+×-distrib-⊎ ._≃_.to∘from (inj₁ ⟨ a , c ⟩) = refl
+×-distrib-⊎ ._≃_.to∘from (inj₂ ⟨ b , c ⟩) = refl
 #+end_src
 
 Sums do not distribute over products up to isomorphism but it is an embedding.

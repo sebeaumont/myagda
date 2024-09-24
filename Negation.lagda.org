@@ -1,0 +1,20 @@
+#+TITLE:     Negation
+#+SETUPFILE: org-source-setup.org
+
+Negation in intuitionistic (constructive?) and classical logic.
+
+* Preamble
+
+The idea is to always eat our own dogfood where possible.
+
+#+begin_src agda2
+module Negation where
+
+open import Naturals using (ℕ)
+
+open import Equality using (_≡_; refl)
+open Equality.≡-Reasoning
+
+open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
+open Isomorphism.≃-Reasoning
+#+end_src
