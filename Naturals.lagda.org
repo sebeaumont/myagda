@@ -279,7 +279,6 @@ zero    * _  = zero
   ∎
 #+end_src
 
-
 ** Using ~rewrite~ for shorthand equational reasoning
 
 [[id:80C26F92-669C-48C5-8247-F9EF51EC331B][Agda Notes]]

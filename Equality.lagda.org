@@ -42,10 +42,7 @@ trans refl refl = refl
 
 ** Congruence of equality
 
-Simply stated if x = y then f x = f y. To me this says as much about
-what a function is as it does about the fact that functoriality
-respects equality. It depends on your viewpoint; but it's a fundemental
-observation from either perspective.
+Simply stated if x = y then f x = f y.
 
 #+begin_src agda2
 cong : {A B : Set} {x y : A} → (f : A → B)
@@ -70,7 +67,7 @@ cong-app refl x = refl
 
 ** Substitution of equality
 
-If two values are equal and a predicate holds for one then it holds
+If two values are equal and a property holds for one then it holds
 for the other.
 
 #+begin_src agda2
@@ -84,7 +81,7 @@ subst P refl x′ = x′
 ** Equational reasoning
 
 Some utilities - here stolen from Core.agda to show how simple the magic
-is.  I'm always genuinely amazed by the power of the dependant type
+is.  I'm always genuinely amazed by the power of the dependent type
 theory and the beauty of Agda as a language. These also show up as a
 separate module in [cite:@plfa22.08] but I did these myself before
 embarking on that journey. 
@@ -131,7 +128,6 @@ module ≡-Reasoning {A : Set} where
   syntax step-≡  x y≡z x≡y = x ≡⟨ x≡y ⟩ y≡z
   syntax step-≡˘ x y≡z y≡x = x ≡˘⟨ y≡x ⟩ y≡z
 #+end_src
-
 
 * Leibniz equality
 
@@ -227,7 +223,6 @@ P x to a proof of P y we need to show x ≡ y - this proof is
       Qy : Q y
       Qy = x≐y Q Qx
 #+end_src
-
 
 * Universe polymorphism
 

@@ -48,12 +48,12 @@ funExt : {f g : A → B} → (p : (x : A) → f x ≡ g x) → f ≡ g
 funExt p i x = p x i
 #+end_src
 
-Postulating extentionality in Agda/MLTT is ok according to the PLFA authors as
-this /axiom/ is consistent with the intuitionistic type theory and constructively
-does not affect computation.
+Postulating extentionality in Agda/MLTT is ok according to the PLFA
+authors as this /axiom/ is consistent with the intuitionistic type theory
+and constructively does not affect computation.
 
-We can use this when we can show that functions always return the same result;
-consider an addition operator defined the other way round to +:
+We can use this when we can show that functions always return the same
+result; consider an addition operator defined the other way round to +:
 
 #+begin_src agda2
 _+'_ : ℕ → ℕ → ℕ
@@ -61,10 +61,10 @@ m +' zero = m
 m +' suc n = suc (m +' n)
 #+end_src
 
-Applying commutativity, it is easy to show that both operators always return the
-same result given the same arguments: (so is this an instance of the proof I
-wanted?) We have an equality proof of commuativity of addition by induction over
-𝐍 which we can use here. 
+Applying commutativity, it is easy to show that both operators always
+return the same result given the same arguments: (so is this an instance
+of the proof I wanted?) We have an equality proof of commuativity of
+addition by induction over 𝐍 which we can use here.
 
 [[id:80C26F92-669C-48C5-8247-F9EF51EC331B][Agda Notes]] (on rewrite/with abstraction)
 

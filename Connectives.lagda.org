@@ -331,7 +331,7 @@ last clause of the above isomorohism proof, having defined the two
 functions as above this seemed simpler. Find out why! I think the answer
 is the tendency to /right/ programming vs /left/ programming - nice that I
 discovered this on my own (well Agda steered me down this road) see:
-[[https://github.com/plfa/plfa.github.io/issues/428][GitHub issue 428]]
+[[https://github.com/plfa/plfa.github.io/issues/428][GitHub issue 428]] and this note: [[id:F449FE74-85B1-4C6B-B188-814649D48CD1][View From The Left]].
 #+end_comment 
 
 In arithmetic also have the rule for exponentials:
@@ -371,7 +371,7 @@ products. In the version above Agda found that this was just =refl=. See
 comment above.
 #+end_comment
 
-* TODO Distributivity
+* Distributivity
 
 Products distribute over sums, up to isomorphism.
 #+begin_src agda2
@@ -395,22 +395,29 @@ Products distribute over sums, up to isomorphism.
 Sums do not distribute over products up to isomorphism but it is an embedding.
 #+begin_src agda2
 ⊎-distrib-× : ∀ {A B C : Set} → (A × B) ⊎ C ≲ (A ⊎ C) × (B ⊎ C)
-⊎-distrib-× = {!!}
+⊎-distrib-× ._≲_.to (inj₁ x) = ⟨ inj₁ (x .proj₁) , inj₁ (x .proj₂) ⟩
+⊎-distrib-× ._≲_.to (inj₂ x) = ⟨ inj₂ x , inj₂ x ⟩
+⊎-distrib-× ._≲_.from ⟨ inj₁ x , inj₁ y ⟩ = inj₁ ⟨ x , y ⟩
+⊎-distrib-× ._≲_.from ⟨ inj₁ x , inj₂ y ⟩ = inj₂ y
+⊎-distrib-× ._≲_.from ⟨ inj₂ x , inj₁ y ⟩ = inj₂ x
+⊎-distrib-× ._≲_.from ⟨ inj₂ x , inj₂ y ⟩ = inj₂ x
+⊎-distrib-× ._≲_.from∘to (inj₁ ⟨ x , y ⟩) = refl
+⊎-distrib-× ._≲_.from∘to (inj₂ z) = refl
 #+end_src
 
 * TODO Exercises
-#+begin_src agda2
+#+begin_src agda
 ⊎-weak-× : ∀ {A B C : Set} → (A ⊎ B) × C → A ⊎ (B × C)
 ⊎-weak-× = {!!}
 #+end_src
 
-#+begin_src agda2
+#+begin_src agda
 ⊎×-implies-×⊎ : ∀ {A B C D : Set} → (A × B) ⊎ (C × D) → (A ⊎ C) × (B ⊎ D)
 ⊎×-implies-×⊎ = {!!}
 #+end_src
 
 Does the converse hold? If not why not, else give a proof.
-#+begin_src agda2
+#+begin_src agda
 #+end_src
 
 

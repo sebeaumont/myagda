@@ -1,11 +1,17 @@
 #+TITLE:     Negation
 #+SETUPFILE: org-source-setup.org
 
-Negation in intuitionistic (constructive?) and classical logic.
+* Negation in intuitionistic and classical logic.
 
 * Preamble
 
-The idea is to always eat our own dogfood where possible.
+The idea is to always eat our own dogfood where possible. If things are
+not defined (so far) in a sophisticated enough manner that makes things
+not work then we need to know what needs to be done if we are to
+understand how Agda is working. Of course it makes sense to check the
+standard library definitions and investigate the reasons for any
+variations from our own "dogfood" as my goal is to make this an efficient
+and usable self-contained library of results.
 
 #+begin_src agda2
 module Negation where
@@ -17,4 +23,98 @@ open Equality.≡-Reasoning
 
 open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
 open Isomorphism.≃-Reasoning
+
+open import Connectives using (_⊎_; inj₁; inj₂; _×_; ⊥; ⊤)
 #+end_src
+
+* Negation
+
+As we encountered briefly in the previous chapter where we introduced the
+logical concept of falsehood or bottom (⊥) if, given a proposition =A=, we
+wish to say that it cannot hold (or equivalently that it is false); we say
+that its assertion is absurd.
+
+#+begin_src agda2
+¬_ : Set → Set
+¬ A = A → ⊥
+
+infix 3 ¬_
+#+end_src
+
+A contradiction can be expressed as saying if both =¬A= and =A= hold then we
+may conclude that =⊥= holds; which, of course, it can't.
+
+#+begin_src agda2
+¬-elim : ∀ {A : Set}
+  → ¬ A
+  → A
+    ---
+  → ⊥
+¬-elim ¬x x = ¬x x 
+#+end_src
+
+Note that =¬-elim= is just a special case of =→-elim=. 
+
+#+begin_src agda2
+¬¬-intro : ∀ {A : Set}
+  → A
+    -----
+  → ¬ ¬ A
+¬¬-intro x ¬x = ¬x x 
+#+end_src
+
+In /classical/ logic we have that =A= is equivalent to =¬¬A= but in
+/intuitionistic/ logic, as used in Agda, we may only state that =A= implies
+=¬¬A=, but not that =¬¬A → A=.
+
+Here =x= is evidence of =A= therefore assuming =¬A= leads to a contradiction and
+hence =¬¬A= must hold.
+
+#+begin_src agda2
+¬¬-intro' : ∀ {A : Set}
+  → A
+    -----
+  → ¬ ¬ A
+¬¬-intro' x ¬x = ¬-elim ¬x x
+#+end_src
+
+We cannot constructively show that =¬¬A → A= , but we can show that =\neg¬¬A=
+implies =¬A=.
+
+#+begin_src agda2
+¬¬¬-elim : ∀ {A : Set}
+  → ¬ ¬ ¬ A
+    -------
+  → ¬ A
+¬¬¬-elim ¬¬¬x = λ x → ¬¬¬x (¬¬-intro x)
+#+end_src
+
+** TODO Nota                                                        :nota:
+- State "TODO"       from              [2024-10-03 Thu 11:58] \\
+  More explanation required here these are not easy to read.
+
+I think it is helpful to read these negations, say =¬¬A= as: /it is not true
+that =A= is false or it is not proven that =A= is false,/ in order to see the
+logical meaning of these propositions and their proofs.
+
+Intuitionist logic seems weaker than classical logic; saying that: /it is
+not proven or known if =A= is false/; says nothing about =A= being true. This
+requirement for us to have /constructed/ an a witness of =A= being true rather
+than the dichotomy of the /excluded middle/ (EM), (or more fundamentally
+/double negation/ (DN) as outlined above), is essense of the intuitionistic
+position, (but AFAIK not necessarily that of the /contructivist/ who takes
+this further into a requirement for finite procedures for exhibiting
+infinite structures; but I'd need to study this further, Brouwer was the
+father and I've so far only looked at Bishop who seems to take this
+seriously indeed). I really think the /logicists/ represented in the work of
+Bertrand Russell and the /formalists/ led by David Hilbert missed an
+opportunity to fulfill all their ambitions by cooperating on at least the
+overlaps or agreements they all shared. At least we are now putting that
+straight and the /classical/ versus the /constructive/ arguments seem
+unimportant now that mathematics, logic and computation are at the
+crossroads of /trinitarianism/ and the aspirations of homotopy type theory
+and the univalent foundations programme take type theory even closer to
+practical formal mathematics.
+
+
+
