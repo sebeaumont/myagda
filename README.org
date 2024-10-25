@@ -1,5 +1,4 @@
 #+TITLE: Learning Agda one Proof at a time
-#+SETUPFILE: org-source-setup.org
 
 [[./320px-Agda's_official_logo.svg.png]]
 

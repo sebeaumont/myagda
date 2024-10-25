@@ -4,4 +4,5 @@
 #+STARTUP: inlineimages overview latexpreview entitiespretty indent
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
-LATEX_CLASS: book 
+#+LATEX_HEADER: \usetikzlibrary{cd}
+#+LATEX_CLASS: book 
