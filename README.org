@@ -1,3 +1,4 @@
+#+setupfile: src/org-source-setup.org
 #+TITLE: Learning Agda one Proof at a time
 
 [[./320px-Agda's_official_logo.svg.png]]
@@ -51,11 +52,11 @@ maintainers of the awesome hen herself.
 See: =Relations= and =Inequality= for example. That might be due to me jumping
 around a bit.
 
-** DOING Be good if the whole thing compiled into a library.
+** DONE Be good if the whole thing compiled into a library.
 I think more or less we eat our own dogfood where we can in each
 chapter. I know the standard-library is more robust and I take a peek if I
 think there's anything subtle required in making sure we build our house
-on sound foundations it's a great source of learning too.
+on sound foundations it's a great source of learning too. 
 
 * Futures
 

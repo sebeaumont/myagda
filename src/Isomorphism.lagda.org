@@ -20,10 +20,10 @@ g ∘ f = λ x → g (f x)
 
 * Extensionality
 
-This seems a strange defintion; I mean even over the Nats how can we be sure that
-two functions produce the same output (apart from running them over all possible
-inputs from the infinite domain){!!} Doesn't seem very constructive to me. I
-wonder what Bishop and Brouwer would say?
+This seems a strange defintion; I mean even over the Nats how can we be
+sure that two functions produce the same output (apart from running them
+over all possible inputs from the domain){!!} Doesn't seem very
+constructive to me. I wonder what Brouwer would say?
 
 This is the converse of =cong-app= as we saw in the earlier [[file:Equality.lagda.org::66][definition]]
 
