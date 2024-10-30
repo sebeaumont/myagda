@@ -14,7 +14,7 @@ import Equality as Eq
 open Eq using (_≡_; refl; cong)
 
 import Relations as Rel
-open Rel using (≤-refl; ≤-trans)
+open Rel using (_≤_; ≤-refl; ≤-trans)
 #+end_src
 
 * ≤-Reasoning
@@ -65,13 +65,14 @@ module ≤-Reasoning where
 #+end_src
 
 
-** Our task now is to prove mononicity again
+** COMMENT Prove mononicity again using this shorthand
 
-#+begin_src agda2
+#+begin_src agda
+open Rel
 open ≤-Reasoning
 #+end_src
 
-#+begin_src agda2
+#+begin_src agda
 +-monoʳ-≤ : ∀ (l m n : ℕ)
   → m ≤ n
     -------------
@@ -90,7 +91,7 @@ open ≤-Reasoning
   ∎
 #+end_src
 
-#+begin_src agda2
+#+begin_src agda
 +-monoˡ-≤ : ∀ (l m n : ℕ)
   → l ≤ m
     -------------
@@ -99,7 +100,7 @@ open ≤-Reasoning
 #+end_src
 
 
-#+begin_src agda2
+#+begin_src agda
 +-mono-≤ : ∀ (k l m n : ℕ)
   → k ≤ l
   → m ≤ n
