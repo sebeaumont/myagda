@@ -3,7 +3,7 @@
 
 * Preamble
 
-The idea is to eat our own dogfood here as far as possible.
+As usual we eat our own dogfood as much as possible.
 
 #+begin_src agda2
 open import Naturals
@@ -20,17 +20,11 @@ g ∘ f = λ x → g (f x)
 
 * Extensionality
 
-This seems a strange defintion; I mean even over the Nats how can we be
-sure that two functions produce the same output (apart from running them
-over all possible inputs from the domain){!!} Doesn't seem very
-constructive to me. I wonder what Brouwer would say?
-
 This is the converse of =cong-app= as we saw in the earlier [[file:Equality.lagda.org][definition]]
 
-Agda does not presume extensionality, but we can postulate that it holds:
+We can't prove extensionality as a theorem in MLTT[fn:1] and thereby
+hangs a tale of great significance. We can assert it an an axiom.
 
-That's because we can't prove extensionality as a theorem in MLTT and thereby
-hangs a tale of great significance. 
 
 #+begin_src agda2
 postulate
@@ -95,7 +89,6 @@ postulate
     → f ≡ g
 #+end_src
 
-Axioms make me nervous. Can't use {-# OPTIONS --safe #-}
 
 * Isomorphism
 
@@ -119,38 +112,38 @@ To prove that Isomorphism is an equivalence relation we need to provide proofs
 of reflexivity, symmetry and transitivity in the usual way:
 
 ** ≃ is reflexive
+
 #+begin_src agda2
 ≃-refl : ∀ {A : Set}
     -----
   → A ≃ A
-≃-refl =
-  record
-    { to = λ{x → x}
-    ; from = λ{y → y}
-    ; from∘to = λ{x → refl}
-    ; to∘from = λ{y → refl}
-    }
+≃-refl .to = λ z → z
+≃-refl .from = λ z → z
+≃-refl .from∘to = λ x → refl
+≃-refl .to∘from = λ y → refl
 #+end_src
 
 ** ≃ is symmetric
-To show that isomorhism is symmetric we simply swap the roles of the functions above:
+
+To show that isomorhism is symmetric we simply swap the roles of the
+functions above:
+
 #+begin_src agda2
 ≃-sym : ∀ {A B : Set}
   → A ≃ B
     -----
   → B ≃ A
-≃-sym A≃B =
-  record
-    { to = from A≃B
-    ; from = to A≃B
-    ; from∘to = to∘from A≃B
-    ; to∘from = from∘to A≃B
-    }
+≃-sym A≃B .to = A≃B .from
+≃-sym A≃B .from = A≃B .to
+≃-sym A≃B .from∘to = to∘from A≃B 
+≃-sym A≃B .to∘from = from∘to A≃B
 #+end_src
 
 ** ≃ is transitive
-To show that isomorohism is transtive we compose the =to= and =from= functions and
-use equational reasoning to combine the inverses:
+
+To show that isomorohism is transtive we compose the =to= and =from= functions
+and use equational reasoning to combine the inverses:
+
 #+begin_src agda2
 ≃-trans : ∀ {A B C : Set}
   → A ≃ B
@@ -384,3 +377,8 @@ So now to prove that equivalence is an equivalence relation
     }
 #+end_src
 ∎
+
+* Footnotes
+
+[fn:1] Why can't we do this? What are the issues? Axioms make me nervous and
+we can't use ={-# OPTIONS --safe #-}=.
