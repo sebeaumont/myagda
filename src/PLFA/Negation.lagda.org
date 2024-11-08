@@ -5,26 +5,23 @@
 
 * Preamble
 
-The idea is to always eat our own dogfood where possible. If things are
-not defined (so far) in a sophisticated enough manner that makes things
-not work then we need to know what needs to be done if we are to
-understand how Agda is working. Of course it makes sense to check the
-standard library definitions and investigate the reasons for any
-variations from our own "dogfood" as my goal is to make this an efficient
-and usable self-contained library of results.
 
 #+begin_src agda2
-module Negation where
+module PLFA.Negation where
 
-open import Naturals using (ℕ)
+import PLFA.Naturals as Nats
+open Nats using (ℕ)
 
-open import Equality using (_≡_; refl)
-open Equality.≡-Reasoning
+import PLFA.Equality as Eq
+open Eq using (_≡_; refl)
+open Eq.≡-Reasoning
 
-open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
-open Isomorphism.≃-Reasoning
+import PLFA.Isomorphism as Iso
+open Iso using (_≃_; _≲_; extensionality; _∘_; _⇔_)
+open Iso.≃-Reasoning
 
-open import Connectives using (_⊎_; inj₁; inj₂; _×_; ⊥; ⊤)
+import PLFA.Connectives as Con
+open Con using (_⊎_; inj₁; inj₂; _×_; ⊥; ⊤)
 #+end_src
 
 * Negation

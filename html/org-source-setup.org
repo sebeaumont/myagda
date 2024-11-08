@@ -2,7 +2,13 @@
 #+EMAIL: datalligator@icloud.com
 #+BIBLIOGRAPHY: ~/Research/Notes/bibliography.bib
 #+STARTUP: inlineimages overview latexpreview entitiespretty indent
+#+LATEX_HEADER: \usepackage{ebproof}
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{positioning}
 #+LATEX_HEADER: \usetikzlibrary{cd}
 #+LATEX_CLASS: book 
+#+OPTIONS: tex:dvisvgm
+#+HTML_HEAD: <link rel="stylesheet" href="Agda.css" type="text/css" />
+#+HTML_HEAD: <link rel="stylesheet" href="tufte.css" type="text/css" />
+#+HTML_HEAD: <link rel="stylesheet" href="ox-tufte.css" type="text/css" />
+

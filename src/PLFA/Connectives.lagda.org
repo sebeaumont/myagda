@@ -1,19 +1,21 @@
 #+TITLE:     Logical Connectives
 #+SETUPFILE: org-source-setup.org
 
-* Preamble
-
-The idea is to always eat our own dogfood where possible.
+* Module Setup
 
 #+begin_src agda2
-module Connectives where
-open import Naturals using (ℕ)
+module PLFA.Connectives where
 
-open import Equality using (_≡_; refl)
-open Equality.≡-Reasoning
+import PLFA.Naturals as Nats
+open Nats using (ℕ)
 
-open import Isomorphism using (_≃_; _≲_; extensionality; _∘_; _⇔_)
-open Isomorphism.≃-Reasoning
+import PLFA.Equality as Eq
+open Eq using (_≡_; refl)
+open Eq.≡-Reasoning
+
+import PLFA.Isomorphism as Iso
+open Iso using (_≃_; _≲_; extensionality; _∘_; _⇔_)
+open Iso.≃-Reasoning
 #+end_src
 
 * DOING Propositions as types - Curry-Howard correspondence

@@ -5,13 +5,10 @@
 
 ** Imports
 
-We eat our own dogfood and import locally made definitions rather than the
-standard library.
-
 #+begin_src agda2
-module Naturals where
+module PLFA.Naturals where
 
-import Equality as Eq 
+import PLFA.Equality as Eq 
 open Eq using (_≡_; refl; cong; sym)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; _∎)
 #+end_src

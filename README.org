@@ -2,7 +2,6 @@
 #+TITLE: Learning Agda one Proof at a time
 
 [[./320px-Agda's_official_logo.svg.png]]
-
 * Following these great courses:
 ________________________________________________________________________
 
@@ -12,14 +11,14 @@ Mainly the first part of:
 /Programming Language Foundations in Agda./
 Available at https://plfa.inf.ed.ac.uk/22.08/. 2022.
 
-With much practical help from:
+With much practical help on interative theorem proving from:
 
 *Jesper Cockx* - /Programming and Proving in Agda./
 [[https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf][https://github.com/jespercockx/agda-lecture-notes/blob/master/agda.pdf]]
 
-And some ideas and inspiration (as well as convincing me (by
-contradiction) that unicode ligagtures and symbols are good for
-readability if used with sparsity and taste.
+And some ideas and inspiration (as well as convincing me, proof by
+contradiction) that unicode ligatures and symbols are good for
+readability iff used with sparsity and taste.
 
 *Conor McBride* - /CS410 Advanced Functional Programming/
 University of Strathclyde lecture series 2017
@@ -27,11 +26,10 @@ University of Strathclyde lecture series 2017
 Video set compiled by Philip Zucker:
 [[https://www.youtube.com/playlist?list=PLqggUNm8QSqmeTg5n37oxBif-PInUfTJ2][https://www.youtube.com/playlist?list=PLqggUNm8QSqmeTg5n37oxBif-PInUfTJ2]]
 
-Also a nice read is [[https://leanpub.com/certainty-by-construction/][Certainty by Construction]] which is an altogether
+Another good read is [[https://leanpub.com/certainty-by-construction/][Certainty by Construction]] which is an altogether
 more gentle introduction to Agda by *Sandy McGuire* aimed at the general
 reader rather than a CS major; but as ever Sandy has been in quite deep
-and disovered a few Agda hints, tip and techniques which are not
-documented elsewhere (other then the reference manual I guess).
+and discovered a few Agda hints, tip and techniques.
 
 ________________________________________________________________________
 
@@ -45,21 +43,22 @@ maintainers of the awesome hen herself.
 
 -- Simon Beaumont 2022-2024
 
-
 * Editors Notes
-
 ** TODO There seems to be some duplication of stuff in here
 See: =Relations= and =Inequality= for example. That might be due to me jumping
-around a bit.
+around a bit. 
 
 ** DONE Be good if the whole thing compiled into a library.
 I think more or less we eat our own dogfood where we can in each
 chapter. I know the standard-library is more robust and I take a peek if I
 think there's anything subtle required in making sure we build our house
 on sound foundations it's a great source of learning too. 
+** TODO Create toplevel package
+so we can avoid ambiguity if we import this stuff as a library.
+** TODO Maybe remove dogfood references in every header.
+I think we get the picture by now.
 
 * Futures
-
 ** TODO Cubical Agda and HoTT-UF
 Might make a chapter on this soon. As I followed a couple of *Anders Mortberg*
 lectures on the HoTT Spring school and was captured when we did =funext=

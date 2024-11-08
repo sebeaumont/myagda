@@ -3,12 +3,15 @@
 
 * Preamble
 
-As usual we eat our own dogfood as much as possible.
-
 #+begin_src agda2
-open import Naturals
-open import Equality
-open Equality.≡-Reasoning
+module PLFA.Isomorphism where
+
+import PLFA.Naturals as Nats
+open Nats
+
+import PLFA.Equality as Eq
+open Eq
+open Eq.≡-Reasoning
 #+end_src
 
 * Function Composition
@@ -89,7 +92,6 @@ postulate
     → f ≡ g
 #+end_src
 
-
 * Isomorphism
 
 Two types (Sets) are isomorphic if they are in one-to-one
@@ -111,14 +113,14 @@ open _≃_
 To prove that Isomorphism is an equivalence relation we need to provide proofs
 of reflexivity, symmetry and transitivity in the usual way:
 
-** ≃ is reflexive
+** ≃ is reflexive [fn:2]
 
 #+begin_src agda2
 ≃-refl : ∀ {A : Set}
     -----
   → A ≃ A
-≃-refl .to = λ z → z
-≃-refl .from = λ z → z
+≃-refl .to = λ x → x
+≃-refl .from = λ x → x
 ≃-refl .from∘to = λ x → refl
 ≃-refl .to∘from = λ y → refl
 #+end_src
@@ -378,7 +380,15 @@ So now to prove that equivalence is an equivalence relation
 #+end_src
 ∎
 
+* References
+#+print_bibliography:
+
 * Footnotes
+[fn:2] Here we adopt a "from-the-left" style of programming as outlined in
+[cite:@mcbride_mckinna_2004] there are good arguments for doing this and
+Agda can use /innacessible patterns/ on the lhs for the required fields [[https://agda.readthedocs.io/en/v2.6.4.2/language/function-definitions.html#dot-patterns][agda documentation on dot patterns]]. 
 
 [fn:1] Why can't we do this? What are the issues? Axioms make me nervous and
 we can't use ={-# OPTIONS --safe #-}=.
+
+

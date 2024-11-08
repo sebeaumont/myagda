@@ -6,7 +6,7 @@
 
 #+begin_src agda2
 {-# OPTIONS --safe #-}
-module Equality where
+module PLFA.Equality where
 
 data _≡_ {A : Set} : A → A → Set where
 

@@ -4,20 +4,20 @@
 * Preamble
 
 #+begin_src agda2
-module Relations where
+module PLFA.Relations where
 
-import Equality as Eq
+import PLFA.Equality as Eq
 open Eq using (_≡_; refl; cong; cong-app)
 open Eq.≡-Reasoning
 
-import Naturals as Nat
+import PLFA.Naturals as Nat
 open Nat using (ℕ; zero; suc; _+_; +-comm; _*_; *-comm)
 
 #+end_src
 
 * Ordering Relations
 
-** Properties of ordering relations
+** Properties of ordering relations:
 
 - /Reflexive/ For all n, the relation n ≤ n holds.
 - /Transitive/ For all m, n, and p, if m ≤ n and n ≤ p hold, then m ≤ p holds.
@@ -31,11 +31,11 @@ open Nat using (ℕ; zero; suc; _+_; +-comm; _*_; *-comm)
 ** Basic ordering relation on ℕ
 
 The new thing we are doing here is that in the definition of the type
-the constructors yield the proposition for the relation by creating an
+the constructors yield the propositions for the relation by creating an
 (ℕ indexed) type.
 
 Also I really like this cool way of embedding the inference rules in
-Agda using comments.
+Agda using comments.[fn:1]
 
 #+begin_src agda2
 data _≤_ : ℕ → ℕ → Set where
@@ -107,10 +107,9 @@ With explicit parameters:
 ≤-trans' (suc m) (suc n) (suc p) (s≤s m≤n) (s≤s n≤p) = s≤s (≤-trans m≤n n≤p)
 #+end_src
 
-The technique of induction on evidence that a property holds (e.g.,
-inducting on evidence that m ≤ n), rather than induction on values (for)
-which the property holds (e.g., inducting on m), will turn out to be
-immensely valuable, and one that we use often.[cite:@plfa22.08]
+This technique of induction on evidence that a property holds, for
+example, on evidence that m ≤ n, rather than induction on values will be
+used often.
 
 ** Anti-symmetry
 
@@ -125,8 +124,8 @@ immensely valuable, and one that we use often.[cite:@plfa22.08]
 -- ≤-antisym (s≤s m≤n) (s≤s n≤m) rewrite (≤-antisym m≤n n≤m) = refl
 #+end_src
 
-The relation is defined inductively on both sides of the inequality so the case
-analysis does not require further cases to satisfy.
+The relation is defined inductively on both sides of the inequality so the
+case analysis does not require further cases to satisfy.
 
 ** Totality
 
@@ -233,9 +232,6 @@ Now for the left identity...
 *-mono-≤ k l m n k≤l m≤n = ≤-trans (*-monoˡ-≤ k l m k≤l) (*-monoʳ-≤ l m n m≤n)          
 #+end_src
 
-* Relational Reasoning 
-
-
 * ≤-Reasoning
 
 By anaology with ≡-Reasoning, attempt to do the same tricks and prove things
@@ -333,3 +329,9 @@ open ≤-Reasoning
     l + n 
   ∎
 #+end_src
+
+
+* Footnotes
+
+[fn:1] This nice way of formatting proofs in rule form comes from the authors
+of [cite:@plfa22.08].
