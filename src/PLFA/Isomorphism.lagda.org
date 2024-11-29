@@ -1,7 +1,7 @@
 #+TITLE:     Isomorphism
 #+SETUPFILE: org-source-setup.org
 
-* Preamble
+* Agda Module
 
 #+begin_src agda2
 module PLFA.Isomorphism where
@@ -23,10 +23,10 @@ g ∘ f = λ x → g (f x)
 
 * Extensionality
 
-This is the converse of =cong-app= as we saw in the earlier [[file:Equality.lagda.org][definition]]
+This is the converse of =cong-app= as we saw in the earlier [[file:PLFA.Equality.html][definition]]
 
 We can't prove extensionality as a theorem in MLTT[fn:1] and thereby
-hangs a tale of great significance. We can assert it an an axiom.
+hangs a tale of great significance. We have to assert it as an axiom.
 
 
 #+begin_src agda2
@@ -38,19 +38,22 @@ postulate
 #+end_src
 
 In cubical Agda we can prove functional extensionality and thus it becomes
-theorem:
+theorem. This is beacause we no longer us an inductive defintion of
+propositional equality in the "types as spaces" theories with hompotopy
+levels, indeed in HoTT types are modelled as =∞-groupoids=.
 
-#+begin_src agda
+#+begin_src agda-cubical
 funExt : {f g : A → B} → (p : (x : A) → f x ≡ g x) → f ≡ g
 funExt p i x = p x i
 #+end_src
 
 Postulating extentionality in Agda/MLTT is ok according to the PLFA
 authors as this /axiom/ is consistent with the intuitionistic type theory
-and constructively does not affect computation.
+and constructively does not affect computation.[fn:3]
 
 We can use this when we can show that functions always return the same
-result; consider an addition operator defined the other way round to +:
+result; consider an addition operator =+'= defined by induction on the
+second argument.
 
 #+begin_src agda2
 _+'_ : ℕ → ℕ → ℕ
@@ -59,9 +62,8 @@ m +' suc n = suc (m +' n)
 #+end_src
 
 Applying commutativity, it is easy to show that both operators always
-return the same result given the same arguments: (so is this an instance
-of the proof I wanted?) We have an equality proof of commuativity of
-addition by induction over 𝐍 which we can use here.
+return the same result given the same arguments. We have an equality proof
+of commuativity of addition by induction over 𝐍 which we can use here.
 
 [[id:80C26F92-669C-48C5-8247-F9EF51EC331B][Agda Notes]] (on rewrite/with abstraction)
 
@@ -74,7 +76,7 @@ same-by-app m n rewrite +-comm m n = helper m n
   helper m (suc n) = cong suc (helper m n)
 #+end_src
 
-We can however assert via extensionality that the two operators are actually
+We can show, via extensionality, that the two operators are actually
 indistinguishable:
 
 #+begin_src agda2
@@ -82,7 +84,7 @@ same : _+'_ ≡ _+_
 same = extensionality (λ m → extensionality (λ n → same-by-app m n))
 #+end_src
 
-We need to postulate extensionality for dependent functions:
+We also need to postulate extensionality for dependent functions:
 
 #+begin_src agda2
 postulate 
@@ -111,22 +113,21 @@ open _≃_
 #+end_src
 
 To prove that Isomorphism is an equivalence relation we need to provide proofs
-of reflexivity, symmetry and transitivity in the usual way:
+of reflexivity, symmetry and transitivity in the usual way[fn:2]:
 
-** ≃ is reflexive [fn:2]
+** ≃ is reflexive 
 
 #+begin_src agda2
 ≃-refl : ∀ {A : Set}
     -----
   → A ≃ A
-≃-refl .to = λ x → x
-≃-refl .from = λ x → x
+≃-refl .to      = λ x → x
+≃-refl .from    = λ x → x
 ≃-refl .from∘to = λ x → refl
 ≃-refl .to∘from = λ y → refl
 #+end_src
 
 ** ≃ is symmetric
-
 To show that isomorhism is symmetric we simply swap the roles of the
 functions above:
 
@@ -135,15 +136,15 @@ functions above:
   → A ≃ B
     -----
   → B ≃ A
-≃-sym A≃B .to = A≃B .from
-≃-sym A≃B .from = A≃B .to
+≃-sym A≃B .to      = A≃B .from
+≃-sym A≃B .from    = A≃B .to
 ≃-sym A≃B .from∘to = to∘from A≃B 
 ≃-sym A≃B .to∘from = from∘to A≃B
 #+end_src
 
 ** ≃ is transitive
 
-To show that isomorohism is transtive we compose the =to= and =from= functions
+To show that isomorphism is transtive we compose the =to= and =from= functions
 and use equational reasoning to combine the inverses:
 
 #+begin_src agda2
@@ -152,32 +153,31 @@ and use equational reasoning to combine the inverses:
   → B ≃ C
     -----
   → A ≃ C
-≃-trans A≃B B≃C =
-  record
-    { to       = to B≃C ∘ to A≃B
-    ; from   = from A≃B ∘ from B≃C
-    ; from∘to = λ{x →
-        begin
-          (from A≃B ∘ from B≃C) ((to B≃C ∘ to A≃B) x)
-        ≡⟨⟩
-          from A≃B (from B≃C (to B≃C (to A≃B x)))
-        ≡⟨ cong (from A≃B) (from∘to B≃C (to A≃B x)) ⟩
-          from A≃B (to A≃B x)
-        ≡⟨ from∘to A≃B x ⟩
-          x
-        ∎}
-    ; to∘from = λ{y →
-        begin
-          (to B≃C ∘ to A≃B) ((from A≃B ∘ from B≃C) y)
-        ≡⟨⟩
-          to B≃C (to A≃B (from A≃B (from B≃C y)))
-        ≡⟨ cong (to B≃C) (to∘from A≃B (from B≃C y)) ⟩
-          to B≃C (from B≃C y)
-        ≡⟨ to∘from B≃C y ⟩
-          y
-        ∎}
-      }
+≃-trans A≃B B≃C .to      = to B≃C ∘ to A≃B 
+≃-trans A≃B B≃C .from    = from A≃B ∘ from B≃C
+≃-trans A≃B B≃C .from∘to = λ x →
+                           begin
+                             (from A≃B ∘ from B≃C) ((to B≃C ∘ to A≃B) x)
+                           ≡⟨⟩
+                             from A≃B (from B≃C (to B≃C (to A≃B x)))
+                           ≡⟨ cong (from A≃B) (from∘to B≃C (to A≃B x)) ⟩
+                             from A≃B (to A≃B x)
+                           ≡⟨ from∘to A≃B x ⟩
+                             x
+                           ∎
+≃-trans A≃B B≃C .to∘from = λ y →
+                           begin
+                             (to B≃C ∘ to A≃B) ((from A≃B ∘ from B≃C) y)
+                           ≡⟨⟩
+                           to B≃C (to A≃B (from A≃B (from B≃C y)))
+                           ≡⟨ cong (to B≃C) (to∘from A≃B (from B≃C y)) ⟩
+                             to B≃C (from B≃C y)
+                           ≡⟨ to∘from B≃C y ⟩
+                             y
+                           ∎
 #+end_src
+
+
 
 We can now add syntax for equational reasoning via isomorphism.
 
@@ -213,7 +213,7 @@ Embedding is a weakening of isomorphism that shows that the first type is
 included in the second but that the second type is in many-to-one correspondence
 with the first.
 
-** ∼< is embedding
+** ≲ is embedding
 #+begin_src agda2
 infix 0 _≲_
 record _≲_ (A B : Set) : Set where
@@ -227,7 +227,7 @@ open _≲_
 Embedding is reflexive and transitive, but not symmetric, however like orderings there
 is a notion of antisymmetry:
 
-** ∼< is reflexive
+** ≲ is reflexive
 #+begin_src agda2
 ≲-refl : ∀ {A : Set} → A ≲ A
 ≲-refl =
@@ -238,7 +238,7 @@ is a notion of antisymmetry:
     }
 #+end_src
 
-** ∼< is transitive
+** ≲ is transitive
 #+begin_src agda2
 ≲-trans : ∀ {A B C : Set} → A ≲ B → B ≲ C → A ≲ C
 ≲-trans A≲B B≲C =
@@ -256,7 +256,7 @@ is a notion of antisymmetry:
     }
 #+end_src
 
-** ∼< is weakly anti-symmetric
+** ≲ is weakly anti-symmetric
 So here is the weak form of anti-symmetry that shows if A embeds in B and B
 embeds in A then they are isomorphic.
 
@@ -314,7 +314,7 @@ module ≲-Reasoning where
   A ≲-∎ = ≲-refl
 #+end_src
 
-* Iso-morhism implies an embedding
+* Isomorhism implies an embedding
 #+begin_src agda2
 ≃-implies-≲ : ∀ {A B : Set}
   → A ≃ B
@@ -378,17 +378,29 @@ So now to prove that equivalence is an equivalence relation
     ; from = (from A⇔B) ∘ (from B⇔C)
     }
 #+end_src
-∎
+
 
 * References
+
 #+print_bibliography:
 
 * Footnotes
-[fn:2] Here we adopt a "from-the-left" style of programming as outlined in
-[cite:@mcbride_mckinna_2004] there are good arguments for doing this and
-Agda can use /innacessible patterns/ on the lhs for the required fields [[https://agda.readthedocs.io/en/v2.6.4.2/language/function-definitions.html#dot-patterns][agda documentation on dot patterns]]. 
 
-[fn:1] Why can't we do this? What are the issues? Axioms make me nervous and
-we can't use ={-# OPTIONS --safe #-}=.
+[fn:3] I'd like to see an exposition on this as I am deeply suspicious of
+what seems to me an essentially non-constructive argument, it is
+impossible to provide an inductive proof via =refl= without traversing
+an infinite domain which is therefore non-computable. This is why we need a
+non-inductive definition of identification via paths in HoTT and e.g.
+cubical type theory.
+[fn:2] From here on we adopt a "from-the-left" style of programming as
+outlined in [cite:@mcbride-mckinna2004] there are good arguments for doing
+this and Agda can use /innacessible patterns/ on the lhs for the required
+fields [[https://agda.readthedocs.io/en/v2.6.4.2/language/function-definitions.html#dot-patterns][agda documentation on dot patterns]].
+
+[fn:1] This is because an inductive definition of equality (the
+identification type) relies on an intensional or defintional notion of
+equality using the =refl= constructor. Since the domain of an arbitrary
+function can be infinite, for example the natural numbers, there is no
+constructive way to do this. 
 
 

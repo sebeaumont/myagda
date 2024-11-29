@@ -4,8 +4,6 @@
 * Negation in intuitionistic and classical logic.
 
 * Preamble
-
-
 #+begin_src agda2
 module PLFA.Negation where
 

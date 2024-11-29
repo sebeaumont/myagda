@@ -11,12 +11,11 @@ module PLFA.Equality where
 data _≡_ {A : Set} : A → A → Set where
 
   refl : {x : A}
-         ------
+         -----
        → x ≡ x
 
 infix 4 _≡_
 {-# BUILTIN EQUALITY _≡_ #-}
-
 #+end_src
 
 ** Symmetry of Equality
