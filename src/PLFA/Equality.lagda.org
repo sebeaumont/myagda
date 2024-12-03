@@ -1,7 +1,15 @@
 #+TITLE:     Equality in Agda
 #+SETUPFILE: org-source-setup.org
 
-* Propositional Equality
+* Propositional or Typeal Equality
+
+Unfortunately terminology and notation has differed quite confusingly[fn:2] in
+the type theory community considered over time; many authors use ≡ for
+/definitional equality/ which is hardwired in most programming languages as
+= here as in other places we will let = stand for definitional or
+/judgemental equality/ which can be interpreted as syntactic. We will use ≡
+for /propositional/ or /typal equality/.[fn:1] 
+
 ** The Equality Type
 
 #+begin_src agda2
@@ -79,11 +87,12 @@ subst P refl x′ = x′
 
 ** Equational reasoning
 
-Some utilities - here stolen from Core.agda to show how simple the magic
+Some utilities - here stolen from =Core.agda= to show how simple the magic
 is.  I'm always genuinely amazed by the power of the dependent type
 theory and the beauty of Agda as a language. These also show up as a
 separate module in [cite:@plfa22.08] but I did these myself before
-embarking on that journey. 
+embarking on that journey. It's worth noting that definition of
+propositional equality there is a little different.
 
 #+begin_src agda2
 module ≡-Reasoning {A : Set} where
@@ -226,3 +235,13 @@ P x to a proof of P y we need to show x ≡ y - this proof is
 * Universe polymorphism
 
 See [[https://agda.readthedocs.io/en/latest/language/sort-system.html#sort-system][Agda sort system documentation]]
+
+* Footnotes
+[fn:2] This is doubly unfortunate as drawing correct distinctions between
+these often reasonably misunderstood notions due to our prior exposure to
+equality as math students is central to an understanding of this subject.
+
+[fn:1] Propostional equality requires us to provide a proof or construct a
+witness of the equality which can only be constructed in the TT expressed
+here using the /refl/ introduction or constructor. Later we will see how
+other notions of equality and equivalence may be formed.

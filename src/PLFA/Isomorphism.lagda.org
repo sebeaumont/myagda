@@ -6,11 +6,9 @@
 #+begin_src agda2
 module PLFA.Isomorphism where
 
-import PLFA.Naturals as Nats
-open Nats
+open import PLFA.Naturals as Nats
 
-import PLFA.Equality as Eq
-open Eq
+open import PLFA.Equality as Eq
 open Eq.≡-Reasoning
 #+end_src
 
@@ -19,15 +17,17 @@ open Eq.≡-Reasoning
 #+begin_src agda2
 _∘_ : ∀ {A B C : Set} → (B → C) → (A → B) → (A → C)
 g ∘ f = λ x → g (f x)
+
+id : ∀ {A : Set} → A → A
+id x = x
 #+end_src
 
 * Extensionality
 
-This is the converse of =cong-app= as we saw in the earlier [[file:PLFA.Equality.html][definition]]
-
-We can't prove extensionality as a theorem in MLTT[fn:1] and thereby
-hangs a tale of great significance. We have to assert it as an axiom.
-
+This is the converse of =cong-app= as we saw in an earlier [[file:Equality.lagda.org][definition]].  We
+can't prove extensionality as a theorem in MLTT due to the inductive
+defintion of /typeal/ or propositional equality[fn:1]. So we have to assert it as
+an axiom.
 
 #+begin_src agda2
 postulate
@@ -38,9 +38,9 @@ postulate
 #+end_src
 
 In cubical Agda we can prove functional extensionality and thus it becomes
-theorem. This is beacause we no longer us an inductive defintion of
+theorem. This is beacause we no longer use an inductive defintion of
 propositional equality in the "types as spaces" theories with hompotopy
-levels, indeed in HoTT types are modelled as =∞-groupoids=.
+levels.[fn:4]
 
 #+begin_src agda-cubical
 funExt : {f g : A → B} → (p : (x : A) → f x ≡ g x) → f ≡ g
@@ -121,10 +121,10 @@ of reflexivity, symmetry and transitivity in the usual way[fn:2]:
 ≃-refl : ∀ {A : Set}
     -----
   → A ≃ A
-≃-refl .to      = λ x → x
-≃-refl .from    = λ x → x
-≃-refl .from∘to = λ x → refl
-≃-refl .to∘from = λ y → refl
+≃-refl .to      = id
+≃-refl .from    = id
+≃-refl .from∘to = λ _ → refl
+≃-refl .to∘from = λ _ → refl
 #+end_src
 
 ** ≃ is symmetric
@@ -230,15 +230,12 @@ is a notion of antisymmetry:
 ** ≲ is reflexive
 #+begin_src agda2
 ≲-refl : ∀ {A : Set} → A ≲ A
-≲-refl =
-  record
-    { to      = λ{x → x}
-    ; from    = λ{y → y}
-    ; from∘to = λ{x → refl}
-    }
+≲-refl .to = id 
+≲-refl .from = id
+≲-refl .from∘to = λ _ → refl
 #+end_src
 
-** ≲ is transitive
+** TODO FTL! ≲ is transitive -    
 #+begin_src agda2
 ≲-trans : ∀ {A B C : Set} → A ≲ B → B ≲ C → A ≲ C
 ≲-trans A≲B B≲C =
@@ -320,12 +317,9 @@ module ≲-Reasoning where
   → A ≃ B
     -----
   → A ≲ B
-≃-implies-≲ A≃B =
-  record
-    { to = to A≃B
-      ; from = from A≃B
-      ; from∘to = from∘to A≃B
-      }
+≃-implies-≲ A≃B .to = A≃B .to
+≃-implies-≲ A≃B .from = A≃B .from
+≃-implies-≲ A≃B .from∘to = A≃B .from∘to
 #+end_src
 
 * Equivalence
@@ -338,18 +332,15 @@ record _⇔_ (A B : Set) : Set where
 open _⇔_
 #+end_src
 
-So now to prove that equivalence is an equivalence relation
+To show that equivalence is an equivalence relation.
 (it had better be eh?)
 
 ** ⇔ is reflexive
 #+begin_src agda2
 ⇔-refl : {A : Set}
   → A ⇔ A
-⇔-refl =
-  record
-    { to = λ{a → a}
-    ; from = λ{b → b}
-    }
+⇔-refl .to = id
+⇔-refl .from = id
 #+end_src
 
 ** ⇔ is symmetric
@@ -358,11 +349,8 @@ So now to prove that equivalence is an equivalence relation
   → A ⇔ B
     -----
   → B ⇔ A
-⇔-sym A⇔B =
-  record
-    { to = from A⇔B
-    ; from = to A⇔B
-    }
+⇔-sym A⇔B .to = A⇔B .from 
+⇔-sym A⇔B .from = A⇔B .to
 #+end_src
 
 ** ⇔ is transitive
@@ -372,11 +360,8 @@ So now to prove that equivalence is an equivalence relation
   → B ⇔ C
     ------
   → A ⇔ C
-⇔-trans A⇔B B⇔C =
-  record
-    { to = (to B⇔C) ∘ (to A⇔B)
-    ; from = (from A⇔B) ∘ (from B⇔C)
-    }
+⇔-trans A⇔B B⇔C .to   = B⇔C .to ∘ A⇔B .to 
+⇔-trans A⇔B B⇔C .from = A⇔B .from ∘ B⇔C .from 
 #+end_src
 
 
@@ -385,6 +370,7 @@ So now to prove that equivalence is an equivalence relation
 #+print_bibliography:
 
 * Footnotes
+[fn:4] Indeed in HoTT types are modelled as =∞-groupoids=. 
 
 [fn:3] I'd like to see an exposition on this as I am deeply suspicious of
 what seems to me an essentially non-constructive argument, it is
@@ -398,7 +384,7 @@ this and Agda can use /innacessible patterns/ on the lhs for the required
 fields [[https://agda.readthedocs.io/en/v2.6.4.2/language/function-definitions.html#dot-patterns][agda documentation on dot patterns]].
 
 [fn:1] This is because an inductive definition of equality (the
-identification type) relies on an intensional or defintional notion of
+identification type) relies on an intentional or definitional notion of
 equality using the =refl= constructor. Since the domain of an arbitrary
 function can be infinite, for example the natural numbers, there is no
 constructive way to do this. 
